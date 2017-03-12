@@ -21,7 +21,7 @@ class Debris: SKSpriteNode, GameSprite {
         self.physicsBody?.affectedByGravity = false
         self.physicsBody?.categoryBitMask = PhysicsCategory.debris.rawValue
         self.physicsBody?.collisionBitMask = 0
-        self.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),SKAction.removeFromParent()]))
+        self.run(SKAction.sequence([SKAction.group([SKAction.wait(forDuration: 0.5),SKAction.fadeAlpha(to: 0 , duration: 0.7)]), SKAction.removeFromParent()]))
     }
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)

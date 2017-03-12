@@ -34,6 +34,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         self.scaleMode = SKSceneScaleMode.aspectFill
+        self.motionManager.startAccelerometerUpdates()
         // Game Variables
         playerHealth = MAX_PLAYER_HEALTH
         energy = 100
@@ -311,6 +312,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     break;
                 case "corrosive":
                     playerHealth -= 1
+                    hud.setHealthDisplay(newHealth: playerHealth)
+                    hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
                     break;
                 case "energy":
                     energy += 50
@@ -318,6 +321,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 default:
                     break;
             }
+            other.node?.run(SKAction.removeFromParent())
         }
         default:
             print("Unknown!")
