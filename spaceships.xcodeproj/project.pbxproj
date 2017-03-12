@@ -229,6 +229,7 @@
 				TargetAttributes = {
 					1B28D9861E74C2D90082B1F9 = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = E656B54U75;
 						ProvisioningStyle = Automatic;
 					};
 					1B28D9A01E74C2D90082B1F9 = {
@@ -460,6 +461,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = E656B54U75;
 				INFOPLIST_FILE = spaceships/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.justinchang.spaceships;
@@ -472,6 +474,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = E656B54U75;
 				INFOPLIST_FILE = spaceships/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.justinchang.spaceships;

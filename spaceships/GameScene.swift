@@ -16,6 +16,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let cam = SKCameraNode()
     let hud = HUD()
     var playerHealth = MAX_PLAYER_HEALTH
+    var energyAnimate = false
+    var healthAnimate = false
     var energy = 100
     var score = 0
     var rocks = 0
@@ -94,6 +96,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     shielded = true
                     playerInstance?.texture = SKTexture(imageNamed: "redship")
                 }
+                else if energy < 50 {
+                     hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+                }
             }
             else {
                 let location = touch.location(in: self)
@@ -154,7 +159,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             energy -= 10
             hud.setEnergyDisplay(newEnergy: energy)
         }
-
+        else {
+            hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+        }
     }
     
     func spawnPowerUp(location:CGPoint) {
@@ -176,12 +183,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             lastTime = currentTime
         }
         let elapsed = currentTime - lastTime!
-        energyTimer -= elapsed
+        if !gameOver {
+            energyTimer -= elapsed
+        }
         if energyTimer <= 0 {
             if shielded {
                 energy -= 2
                 if energy < 50 {
-                    print("out of energy!")
+                    hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
                     shielded = false
                     playerInstance?.texture = SKTexture(imageNamed:"Spaceship")
                 }
@@ -273,10 +282,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if shielded {
             energy -= 50
             hud.setEnergyDisplay(newEnergy: energy)
+            hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
         }
         else {
             playerHealth -= 1
             hud.setHealthDisplay(newHealth: playerHealth)
+            hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
         }
         let loc = other.node?.position
         other.node?.run(SKAction.removeFromParent())
