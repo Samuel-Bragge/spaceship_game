@@ -19,13 +19,17 @@ class Powerup: SKSpriteNode, GameSprite {
         power = Int(arc4random_uniform(3))
         switch(power!) {
         case 0:
-            self.color = .red;
+            self.color = .red; // health
+            self.name = "healthpack"
         case 1:
-            self.color = .green;
+            self.color = .green; // hurt
+            self.name = "corrosive"
         case 2:
-            self.color = .blue;
+            self.color = .blue; // energy
+            self.name = "energy"
         default:
-            self.color = .white;
+            self.color = .white; // wtf
+            self.name = "error"
         }
         self.physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         self.physicsBody?.velocity = CGVector(dx:Int(arc4random_uniform(100))-50, dy:Int(arc4random_uniform(100))-50)
