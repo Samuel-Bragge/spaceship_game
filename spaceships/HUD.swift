@@ -7,16 +7,27 @@
 //
 
 import SpriteKit
+import UIKit
 
 class HUD: SKNode {
-    let scoreText = SKLabelNode(text: "00000")
+    let scoreText = SKLabelNode(text: "000000")
+    let hiScoreText = SKLabelNode(text: "Hi: 000000")
     let energyText = SKLabelNode(text: "")
     let healthText = SKLabelNode(text: "")
     let restartButton = SKSpriteNode()
     let menuButton = SKSpriteNode()
     let textureAtlas = SKTextureAtlas(named: "HUD")
+    var hiScore:Int?
     
     func createHudNodes(screenSize:CGSize) {
+        if UserDefaults.standard.object(forKey: "hiscore") == nil {
+            UserDefaults.standard.set(0, forKey: "hiscore")
+            UserDefaults.standard.synchronize()
+            hiScore = 0
+        }
+        else {
+            hiScore = UserDefaults.standard.object(forKey:"hiscore") as! Int
+        }
         let cameraOrigin = CGPoint(
             x: screenSize.width / 2,
             y: screenSize.height / 2)
@@ -26,6 +37,13 @@ class HUD: SKNode {
         scoreText.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
         scoreText.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
         self.addChild(scoreText)
+        
+        let hiScoreTextPosition = CGPoint (x: -cameraOrigin.x + 450, y: cameraOrigin.y - 500)
+        hiScoreText.position = hiScoreTextPosition
+        hiScoreText.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        hiScoreText.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        self.addChild(hiScoreText)
+        setHiScoreDisplay(newHiScore:hiScore!)
         
         let energyTextPosition = CGPoint (x: -cameraOrigin.x + 40, y: cameraOrigin.y - 540)
         energyText.position = energyTextPosition
@@ -75,6 +93,21 @@ class HUD: SKNode {
         formatter.minimumIntegerDigits = 6
         if let scoreStr = formatter.string(from: number) {
             scoreText.text = scoreStr
+        }
+        if newScore > hiScore! {
+            hiScore = newScore
+            setHiScoreDisplay(newHiScore: hiScore!)
+            UserDefaults.standard.set(hiScore, forKey: "hiscore")
+            UserDefaults.standard.synchronize()
+        }
+    }
+    
+    func setHiScoreDisplay(newHiScore: Int) {
+        let formatter = NumberFormatter()
+        let number = NSNumber(value: newHiScore)
+        formatter.minimumIntegerDigits = 6
+        if let hiScoreStr = formatter.string(from: number) {
+            hiScoreText.text = "Hi: "+hiScoreStr
         }
     }
     

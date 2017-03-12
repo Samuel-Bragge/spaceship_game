@@ -16,6 +16,10 @@ class GameViewController: UIViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+        if UserDefaults.standard.object(forKey: "hiscore") == nil {
+            UserDefaults.standard.set(0, forKey: "hiscore")
+            UserDefaults.standard.synchronize()
+        }
         let menuScene = MenuScene()
         let skView = self.view as! SKView
         skView.ignoresSiblingOrder = true
