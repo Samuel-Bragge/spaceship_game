@@ -26,6 +26,7 @@
 		1B9821E31E74FA3E00FD99B5 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9821E21E74FA3E00FD99B5 /* MenuScene.swift */; };
 		1B9821E51E74FA8700FD99B5 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9821E41E74FA8700FD99B5 /* Background.swift */; };
 		B20E81AA1E750B0B00F5C4B2 /* HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20E81A91E750B0B00F5C4B2 /* HUD.swift */; };
+		B29947741E760F3C00BBE7E2 /* Tiles.sks in Resources */ = {isa = PBXBuildFile; fileRef = B29947721E760F3C00BBE7E2 /* Tiles.sks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 		1B9821E21E74FA3E00FD99B5 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 		1B9821E41E74FA8700FD99B5 /* Background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
 		B20E81A91E750B0B00F5C4B2 /* HUD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HUD.swift; sourceTree = "<group>"; };
+		B29947721E760F3C00BBE7E2 /* Tiles.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; name = Tiles.sks; path = ../Tiles.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +123,7 @@
 		1B28D9891E74C2D90082B1F9 /* spaceships */ = {
 			isa = PBXGroup;
 			children = (
+				B29947721E760F3C00BBE7E2 /* Tiles.sks */,
 				1B28D98A1E74C2D90082B1F9 /* AppDelegate.swift */,
 				1B28D98C1E74C2D90082B1F9 /* GameScene.sks */,
 				1B28D9C01E74C38E0082B1F9 /* Spaceship.swift */,
@@ -229,7 +232,7 @@
 				TargetAttributes = {
 					1B28D9861E74C2D90082B1F9 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = E656B54U75;
+						DevelopmentTeam = K7HCY2VAD5;
 						ProvisioningStyle = Automatic;
 					};
 					1B28D9A01E74C2D90082B1F9 = {
@@ -272,6 +275,7 @@
 				1B28D9961E74C2D90082B1F9 /* Main.storyboard in Resources */,
 				1B28D98D1E74C2D90082B1F9 /* GameScene.sks in Resources */,
 				1B28D9981E74C2D90082B1F9 /* Assets.xcassets in Resources */,
+				B29947741E760F3C00BBE7E2 /* Tiles.sks in Resources */,
 				1B28D99B1E74C2D90082B1F9 /* LaunchScreen.storyboard in Resources */,
 				1B28D98F1E74C2D90082B1F9 /* Actions.sks in Resources */,
 			);
@@ -461,10 +465,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = E656B54U75;
+				DEVELOPMENT_TEAM = K7HCY2VAD5;
 				INFOPLIST_FILE = spaceships/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.justinchang.spaceships;
+				PRODUCT_BUNDLE_IDENTIFIER = com.SalinStudios.spaceships;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -474,10 +478,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = E656B54U75;
+				DEVELOPMENT_TEAM = K7HCY2VAD5;
 				INFOPLIST_FILE = spaceships/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.justinchang.spaceships;
+				PRODUCT_BUNDLE_IDENTIFIER = com.SalinStudios.spaceships;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
