@@ -168,7 +168,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     override func update(_ currentTime: TimeInterval) {
-        if energy <= 30 && !gameOver{
+        if playerHealth <= 0 && !gameOver{
             hud.showButtons()
             gameOver = true
         }
