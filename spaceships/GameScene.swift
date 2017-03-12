@@ -7,8 +7,10 @@
 //
 
 import SpriteKit
+import CoreMotion
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    let motionManager = CMMotionManager()
     var playerInstance:SKSpriteNode?
     let playerSpeed:Double = 300
     let cam = SKCameraNode()
@@ -23,6 +25,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var energyLabel:UILabel?
     var healthLabel:UILabel?
     var scoreLabel:UILabel?
+    let initialPlayerPosition = CGPoint(x:150, y:250)
+    var playerProgress = CGFloat()
+    var backgrounds: [Background] = []
     
     
     override func didMove(to view: SKView) {
@@ -41,19 +46,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         healthLabel?.textAlignment = NSTextAlignment.center
         healthLabel?.text = "Health: \(playerHealth)"
         healthLabel?.textColor = .white
-        self.view!.addSubview(healthLabel!)
+//        self.view!.addSubview(healthLabel!)
         
         energyLabel = UILabel(frame: CGRect(x: 300, y: 0, width: 200, height: 21))
         energyLabel?.textAlignment = NSTextAlignment.center
         energyLabel?.text = "Energy: \(energy)"
         energyLabel?.textColor = .white
-        self.view!.addSubview(energyLabel!)
+//        self.view!.addSubview(energyLabel!)
         
         scoreLabel = UILabel(frame: CGRect(x: 25, y: 0, width: 200, height: 21))
         scoreLabel?.textAlignment = NSTextAlignment.left
         scoreLabel?.text = "Score: \(score)"
         scoreLabel?.textColor = .white
-        self.view!.addSubview(scoreLabel!)
+//        self.view!.addSubview(scoreLabel!)
         
         var frame: CGRect = (healthLabel?.frame)!
         let xPosition: CGFloat = view.frame.width - frame.width
@@ -68,6 +73,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for _ in 1...15 {
             addRock()
         }
+        for _ in 0..<3 {
+            backgrounds.append(Background())
+        }
+        //        backgrounds[0].spawn(parentNode: self, imageName: "background-front", zPosition: -5, movementMultiplier: 0.75)
+        //        backgrounds[1].spawn(parentNode: self, imageName: "background-middle", zPosition: -10, movementMultiplier: 0.5)
+        backgrounds[2].spawn(parentNode: self, imageName: "background-back", zPosition: -15, movementMultiplier: 0.2)
     }
     func addRock() {
         let rock = Asteroid()
@@ -105,14 +116,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
 
     }
-    func playerRespondToTouch(firstTouch: UITouch) {
-        if let me = playerInstance {
-            let xDist: CGFloat = (firstTouch.location(in: self).x - me.position.x);
-            let yDist: CGFloat = (firstTouch.location(in: self).y - me.position.y);
-            let distance:Double = Double(hypotf(Float(xDist), Float(yDist)))
-            let actionSequence = [SKAction.rotate(toAngle:atan2(yDist, xDist)-CGFloat(M_PI)/2, duration: 0.25, shortestUnitArc: true), SKAction.move(to:firstTouch.location(in: self), duration:distance/playerSpeed)]
-            me.run(SKAction.group(actionSequence))
-        }
+    
+    func spawnPowerUp(location:CGPoint) {
+        let power = Powerup()
+        power.position = location
+        self.addChild(power)
     }
     
     override func didSimulatePhysics() {
@@ -146,6 +154,47 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel?.text = "Score: \(score)"
         energyLabel?.text = "Energy: \(energy)"
         lastTime = currentTime
+        if let accelData = self.motionManager.accelerometerData {
+            var forceAmount: CGFloat
+            var movement = CGVector()
+            playerInstance?.zRotation = CGFloat(atan2(-accelData.acceleration.x,accelData.acceleration.y)-Double(M_PI/2))
+            switch
+            UIApplication.shared.statusBarOrientation {
+            case .landscapeLeft:
+                forceAmount = 35
+            case .landscapeRight:
+                forceAmount = -35
+            default:
+                forceAmount = 0
+            }
+            if accelData.acceleration.y > 0.15 {
+                movement.dx = forceAmount
+            }
+            else if accelData.acceleration.y < -0.15 {
+                movement.dx = -forceAmount
+            }
+            if accelData.acceleration.x > 0.15 {
+                movement.dy = -forceAmount
+            }
+            else if accelData.acceleration.x < -0.15 {
+                movement.dy = forceAmount
+            }
+            playerInstance?.physicsBody?.applyForce(movement)
+            // speed cap
+            if (playerInstance?.physicsBody?.velocity.dx)! > CGFloat(MAX_PLAYER_SPEED) {
+                playerInstance?.physicsBody?.velocity.dx = CGFloat(MAX_PLAYER_SPEED)
+            }
+            else if (playerInstance?.physicsBody?.velocity.dx)! < CGFloat(-MAX_PLAYER_SPEED) {
+                playerInstance?.physicsBody?.velocity.dx = CGFloat(-MAX_PLAYER_SPEED)
+            }
+            if (playerInstance?.physicsBody?.velocity.dy)! > CGFloat(MAX_PLAYER_SPEED) {
+                playerInstance?.physicsBody?.velocity.dy = CGFloat(MAX_PLAYER_SPEED)
+            }
+            else if (playerInstance?.physicsBody?.velocity.dy)! < CGFloat(-MAX_PLAYER_SPEED) {
+                playerInstance?.physicsBody?.velocity.dy = CGFloat(-MAX_PLAYER_SPEED)
+            }
+        }
+
     }
     func didBegin(_ contact: SKPhysicsContact){
         let playerMask = PhysicsCategory.spaceship.rawValue | PhysicsCategory.damagedSpaceship.rawValue
@@ -178,6 +227,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 bits.position = loc!
                 self.addChild(bits)
             }
+            if(arc4random_uniform(10) == 0) {
+                spawnPowerUp(location: loc!)
+            }
         case PhysicsCategory.powerup.rawValue:
             print("Power up!")
         default:
@@ -198,6 +250,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 bits.position = loc!
                 self.addChild(bits)
             }
+            if(arc4random_uniform(10) == 0) {
+                spawnPowerUp(location: loc!)
+            }
         default:
             print("Unknown!")
         }
@@ -208,6 +263,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 let ENERGY_RECHARGE = 0.1
 let SCORE_TICKRATE = 2.0
 let ROCK_SPAWNRATE = 5.0
+let MAX_PLAYER_SPEED = 300
 
 enum PhysicsCategory:UInt32 {
     case spaceship = 1

@@ -14,9 +14,7 @@ class Laser:SKSpriteNode {
     func onTap() {
     }
     init() {
-        // *********** TEMPORARY IMAGE!!!! **********
         super.init(texture: nil, color: .cyan, size: initialSize)
-        // *********** TEMPORARY ********************
         self.physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         self.physicsBody?.affectedByGravity = false
         self.physicsBody?.categoryBitMask = PhysicsCategory.laser.rawValue
