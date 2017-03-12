@@ -9,7 +9,8 @@ class Background: SKSpriteNode {
     // jumpAdjustment will store how many points of x position
     // this background has jumped forward, useful for calculating
     // future seamless jump points:
-    var jumpAdjustment = CGFloat(0)
+    var jumpAdjustment_x = CGFloat(0)
+    var jumpAdjustment_y = CGFloat(0)
     // A constant for background node size:
     let backgroundSize = CGSize(width: 1024, height: 768)
     // Store the Backgrounds texture:
@@ -35,33 +36,40 @@ class Background: SKSpriteNode {
         // forward and behind the player at position zero.
         // closed range operator: "..." includes both endpoints:
         for i in -1...1 {
-            let newBGNode = SKSpriteNode(texture: texture)
-            // Set the size for this node from constant:
-            newBGNode.size = backgroundSize
-            // Position these nodes by their lower left corner:
-            newBGNode.anchorPoint = CGPoint.zero
-            // Position this background node:
-            newBGNode.position = CGPoint(
-                x: i * Int(backgroundSize.width), y: 0)
-            // Add the node to the Background:
-            self.addChild(newBGNode)
+            for j in -1...1 {
+                let newBGNode = SKSpriteNode(texture: texture)
+                // Set the size for this node from constant:
+                newBGNode.size = backgroundSize
+                // Position these nodes by their lower left corner:
+                newBGNode.anchorPoint = CGPoint.zero
+                // Position this background node:
+                newBGNode.position = CGPoint(
+                    x: i * Int(backgroundSize.width), y: j * Int(backgroundSize.height))
+                // Add the node to the Background:
+                self.addChild(newBGNode)
+            }
         }
     }
     
     // We will call updatePosition every frame to
     // reposition the background:
-    func updatePosition(playerProgress:CGFloat) {
+    func updatePosition(playerProgress_x:CGFloat, playerProgress_y:CGFloat) {
         // Calculate a position adjustment after loops and
         // parallax multiplier:
-        let adjustedPosition = jumpAdjustment + playerProgress *
+        let adjustedPosition_x = jumpAdjustment_x + playerProgress_x *
             (1 - movementMultiplier)
+        let adjustedPosition_y = jumpAdjustment_y + playerProgress_y * (1 - movementMultiplier)
         // Check if we need to jump the background forward:
-        if playerProgress - adjustedPosition >
+        if playerProgress_x - adjustedPosition_x >
             backgroundSize.width {
-            jumpAdjustment += backgroundSize.width
+            jumpAdjustment_x += backgroundSize.width
+        }
+        if playerProgress_y - adjustedPosition_y > backgroundSize.height {
+            jumpAdjustment_y += backgroundSize.height
         }
         // Adjust this background forward as the world
         // moves back so the background appears slower:
-        self.position.x = adjustedPosition
+        self.position.x = adjustedPosition_x
+        self.position.y = adjustedPosition_y
     }
 }

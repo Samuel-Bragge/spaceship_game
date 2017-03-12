@@ -220,7 +220,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         hud.setHealthDisplay(newHealth: playerHealth)
         lastTime = currentTime
         for background in backgrounds {
-            background.updatePosition(playerProgress: (playerInstance?.position.x)!)
+            background.updatePosition(playerProgress_x: (playerInstance?.position.x)!, playerProgress_y: (playerInstance?.position.y)!)
         }
         if let accelData = self.motionManager.accelerometerData {
             var forceAmount: CGFloat
