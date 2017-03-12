@@ -14,6 +14,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var playerInstance:SKSpriteNode?
     let playerSpeed:Double = 300
     let cam = SKCameraNode()
+    let hud = HUD()
     var playerHealth = 10
     var energy = 100
     var score = 0
@@ -42,6 +43,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.anchorPoint = .zero
         self.camera = cam
         self.physicsWorld.contactDelegate = self
+        // HUD initialization
+        self.addChild(self.camera!)
+        self.camera!.zPosition = 50
+        hud.createHudNodes(screenSize: self.size)
+        self.camera!.addChild(hud)
         
         healthLabel = UILabel(frame: CGRect(x: 150, y: 0, width: 200, height: 21))
         healthLabel?.textAlignment = NSTextAlignment.center
@@ -131,6 +137,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.addChild(laser)
             energy -= 10
             energyLabel?.text = "Energy: \(energy)"
+            hud.setEnergyDisplay(newEnergy: energy)
         }
 
     }
@@ -164,11 +171,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if energy > 100 {
                 energy = 100
             }
+            hud.setEnergyDisplay(newEnergy: energy)
             energyTimer = ENERGY_RECHARGE
         }
         scoreTimer -= elapsed
         if scoreTimer <= 0 {
             score += 3
+            hud.setScoreDisplay(newScore: score)
             scoreTimer = SCORE_TICKRATE
         }
         rockTimer -= elapsed
@@ -178,6 +187,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         scoreLabel?.text = "Score: \(score)"
         energyLabel?.text = "Energy: \(energy)"
+        hud.setHealthDisplay(newHealth: playerHealth)
         lastTime = currentTime
         if let accelData = self.motionManager.accelerometerData {
             var forceAmount: CGFloat
@@ -242,10 +252,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func playerCollision(other:SKPhysicsBody) {
         switch other.categoryBitMask {
         case PhysicsCategory.enemy.rawValue:
-            if shielded {
-                playerHealth -= 1
-                energy -= 50
-            }
+
+          if shielded {
+              energy -= 50
+              hud.setEnergyDisplay(newEnergy: energy)
+          }
+          else {
+              playerHealth -= 1
+              hud.setHealthDisplay(newHealth: playerHealth
+          }
+            
+
             healthLabel?.text = "Health: \(playerHealth)"
             let loc = other.node?.position
             other.node?.run(SKAction.removeFromParent())
