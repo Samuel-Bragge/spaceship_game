@@ -13,10 +13,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let playerSpeed:Double = 300
     let cam = SKCameraNode()
     var playerHealth = 10
+    var energy = 100
     var score = 0
-    var startTime = 0
-    var lasttick = 0
     var rocks = 0
+    var energyTimer = ENERGY_RECHARGE
+    var rockTimer = ROCK_SPAWNRATE
+    var scoreTimer = SCORE_TICKRATE
+    var lastTime:TimeInterval?
+    var energyLabel:UILabel?
     var healthLabel:UILabel?
     var scoreLabel:UILabel?
     
@@ -24,9 +28,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         // Game Variables
         playerHealth = 10
+        energy = 100
         score = 0
-        startTime = 0
-        lasttick = 0
         rocks = 0
         // End Game Variables
         
@@ -39,6 +42,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         healthLabel?.text = "Health: \(playerHealth)"
         healthLabel?.textColor = .white
         self.view!.addSubview(healthLabel!)
+        
+        energyLabel = UILabel(frame: CGRect(x: 300, y: 0, width: 200, height: 21))
+        energyLabel?.textAlignment = NSTextAlignment.center
+        energyLabel?.text = "Energy: \(energy)"
+        energyLabel?.textColor = .white
+        self.view!.addSubview(energyLabel!)
         
         scoreLabel = UILabel(frame: CGRect(x: 25, y: 0, width: 200, height: 21))
         scoreLabel?.textAlignment = NSTextAlignment.left
@@ -70,14 +79,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let firsttouch = touches.first {
-            playerRespondToTouch(firstTouch: firsttouch)
+//        if let firsttouch = touches.first {
+//            playerRespondToTouch(firstTouch: firsttouch)
+//        }
+        for touch in touches {
+            if touch.location(in: view).x > view!.frame.width/2 {
+                fireLaser()
+            }
+            else {
+                print("shields!")
+            }
         }
     }
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let firsttouch = touches.first {
-            playerRespondToTouch(firstTouch: firsttouch)
+
+    func fireLaser() {
+        if energy >= 10 {
+            let offset = CGPoint(x:(playerInstance?.position.x)! + cos(((playerInstance?.zRotation)!+CGFloat(M_PI/2)))*(playerInstance?.size.width)!*0.67, y:(playerInstance?.position.y)! + sin(((playerInstance?.zRotation)!+CGFloat(M_PI/2)))*(playerInstance?.size.width)!*0.67)
+            let laser = Laser()
+            laser.physicsBody?.velocity = CGVector(dx: 300*cos(((playerInstance?.zRotation)!+CGFloat(M_PI/2))), dy: 300*sin(((playerInstance?.zRotation)!+CGFloat(M_PI/2))))
+            laser.zRotation = (playerInstance?.zRotation)!
+            laser.position = offset
+            self.addChild(laser)
+            energy -= 10
+            energyLabel?.text = "Energy: \(energy)"
         }
+
     }
     func playerRespondToTouch(firstTouch: UITouch) {
         if let me = playerInstance {
@@ -94,25 +120,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     override func update(_ currentTime: TimeInterval) {
-        if startTime == 0 {
-            startTime = Int(floor(currentTime))
-            lasttick = Int(floor(currentTime))
+        if lastTime == nil {
+            lastTime = currentTime
         }
-        if Int(floor(currentTime)) != lasttick {
-            var ticked:Bool = false;
-            if Int(floor(currentTime)) % 2 == 0 {
-                score += 10
-                ticked = true;
+        let elapsed = currentTime - lastTime!
+        energyTimer -= elapsed
+        if energyTimer <= 0 {
+            energy += 1
+            if energy > 100 {
+                energy = 100
             }
-            if Int(floor(currentTime)) % 5 == 0 {
-                addRock()
-                ticked = true
-            }
-            if ticked {
-                lasttick = Int(floor(currentTime))
-            }
+            energyTimer = ENERGY_RECHARGE
+        }
+        scoreTimer -= elapsed
+        if scoreTimer <= 0 {
+            score += 3
+            scoreTimer = SCORE_TICKRATE
+        }
+        rockTimer -= elapsed
+        if rockTimer <= 0 {
+            print("rock \(Int(floor(currentTime*100)))")
+            addRock()
+            rockTimer = ROCK_SPAWNRATE
         }
         scoreLabel?.text = "Score: \(score)"
+        energyLabel?.text = "Energy: \(energy)"
+        lastTime = currentTime
     }
     func didBegin(_ contact: SKPhysicsContact){
         let playerMask = PhysicsCategory.spaceship.rawValue | PhysicsCategory.damagedSpaceship.rawValue
@@ -124,7 +157,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             laserCollision(laser:contact.bodyA, other:contact.bodyB)
         }
         else {
-            playerCollision(other:contact.bodyA)
+            if (contact.bodyB.categoryBitMask & playerMask) > 0 {
+                playerCollision(other:contact.bodyA)
+            }
+            else if (contact.bodyB.categoryBitMask & laserMask) > 0 {
+                laserCollision(laser:contact.bodyB, other: contact.bodyA)
+            }
         }
     }
     func playerCollision(other:SKPhysicsBody) {
@@ -150,6 +188,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func laserCollision(laser: SKPhysicsBody, other:SKPhysicsBody) {
         switch other.categoryBitMask {
         case PhysicsCategory.enemy.rawValue:
+            score += 10
             laser.node?.run(SKAction.removeFromParent())
             let loc = other.node?.position
             other.node?.run(SKAction.removeFromParent())
@@ -166,6 +205,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 }
 
+let ENERGY_RECHARGE = 0.1
+let SCORE_TICKRATE = 2.0
+let ROCK_SPAWNRATE = 5.0
 
 enum PhysicsCategory:UInt32 {
     case spaceship = 1
