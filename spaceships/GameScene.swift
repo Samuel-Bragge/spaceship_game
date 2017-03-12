@@ -126,12 +126,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         transition: .crossFade(withDuration: 0.6))
                 }
             }
-
         }
-        
-        
-        // asodf;nasdnf
-            }
+    }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             if touch.location(in: view).x < view!.frame.width/2 {
@@ -223,6 +219,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         hud.setHealthDisplay(newHealth: playerHealth)
         lastTime = currentTime
+        for background in backgrounds {
+            background.updatePosition(playerProgress: (playerInstance?.position.x)!)
+        }
         if let accelData = self.motionManager.accelerometerData {
             var forceAmount: CGFloat
             var movement = CGVector()
