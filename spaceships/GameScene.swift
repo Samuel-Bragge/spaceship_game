@@ -15,7 +15,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let playerSpeed:Double = 300
     let cam = SKCameraNode()
     let hud = HUD()
-    var playerHealth = 10
+    var playerHealth = MAX_PLAYER_HEALTH
     var energy = 100
     var score = 0
     var rocks = 0
@@ -24,20 +24,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var rockTimer = ROCK_SPAWNRATE
     var scoreTimer = SCORE_TICKRATE
     var lastTime:TimeInterval?
-    var energyLabel:UILabel?
-    var healthLabel:UILabel?
-    var scoreLabel:UILabel?
     let initialPlayerPosition = CGPoint(x:150, y:250)
     var playerProgress = CGFloat()
     var backgrounds: [Background] = []
+    var gameOver = false
     
     
     override func didMove(to view: SKView) {
+        self.scaleMode = SKSceneScaleMode.aspectFill
         // Game Variables
-        playerHealth = 10
+        playerHealth = MAX_PLAYER_HEALTH
         energy = 100
         score = 0
         rocks = 0
+        gameOver = false
         // End Game Variables
         
         self.anchorPoint = .zero
@@ -48,29 +48,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.camera!.zPosition = 50
         hud.createHudNodes(screenSize: self.size)
         self.camera!.addChild(hud)
-        
-        healthLabel = UILabel(frame: CGRect(x: 150, y: 0, width: 200, height: 21))
-        healthLabel?.textAlignment = NSTextAlignment.center
-        healthLabel?.text = "Health: \(playerHealth)"
-        healthLabel?.textColor = .white
-//        self.view!.addSubview(healthLabel!)
-        
-        energyLabel = UILabel(frame: CGRect(x: 300, y: 0, width: 200, height: 21))
-        energyLabel?.textAlignment = NSTextAlignment.center
-        energyLabel?.text = "Energy: \(energy)"
-        energyLabel?.textColor = .white
-//        self.view!.addSubview(energyLabel!)
-        
-        scoreLabel = UILabel(frame: CGRect(x: 25, y: 0, width: 200, height: 21))
-        scoreLabel?.textAlignment = NSTextAlignment.left
-        scoreLabel?.text = "Score: \(score)"
-        scoreLabel?.textColor = .white
-//        self.view!.addSubview(scoreLabel!)
-        
-        var frame: CGRect = (healthLabel?.frame)!
-        let xPosition: CGFloat = view.frame.width - frame.width
-        frame.origin = CGPoint(x: ceil(xPosition), y: 0.0)
-        view.autoresizingMask = [.flexibleLeftMargin, .flexibleBottomMargin]
         
         let player = Spaceship()
         playerInstance = player
@@ -90,26 +67,65 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func addRock() {
         let rock = Asteroid()
         repeat {
-            rock.position = CGPoint(x:Double(arc4random_uniform(500)), y:Double(arc4random_uniform(500)))
+            var x_mult:Double = 1
+            var y_mult:Double = 1
+            if arc4random_uniform(2) == 0 {
+                x_mult = -1
+            }
+            if arc4random_uniform(2) == 0 {
+                y_mult = -1
+            }
+            let rock_x = Double(playerInstance!.position.x)+x_mult*Double(arc4random_uniform(200)+100)
+            let rock_y = Double(playerInstance!.position.y)+y_mult*Double(arc4random_uniform(200)+100)
+            
+            rock.position = CGPoint(x:rock_x, y:rock_y)
         } while(abs(rock.position.x-playerInstance!.position.x) < 100 && abs(rock.position.y-playerInstance!.position.y) < 100)
         self.addChild(rock)
         rocks += 1
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        if let firsttouch = touches.first {
-//            playerRespondToTouch(firstTouch: firsttouch)
-//        }
         for touch in touches {
-            if touch.location(in: view).x > view!.frame.width/2 {
-                fireLaser()
+            if !gameOver {
+                if touch.location(in: view).x > view!.frame.width/2 {
+                    fireLaser()
+                }
+                else if energy >= 50{
+                    shielded = true
+                    playerInstance?.texture = SKTexture(imageNamed: "redship")
+                }
             }
-            else if energy >= 50{
-                shielded = true
-                playerInstance?.texture = SKTexture(imageNamed: "redship")
+            else {
+                let location = touch.location(in: self)
+                // Locate the node at this location:
+                let nodeTouched = atPoint(location)
+                // Attempt to downcast the node to the GameSprite protocol
+                if let gameSprite = nodeTouched as? GameSprite {
+                    // If this node adheres to GameSprite, call onTap:
+                    gameSprite.onTap()
+                }
+                // Check for HUD buttons:
+                if nodeTouched.name == "restartGame" {
+                    // Transition to a new version of the GameScene
+                    // to restart the game:
+                    self.view?.presentScene(
+                        GameScene(size: self.size),
+                        transition: .crossFade(withDuration: 0.6))
+                }
+                else if nodeTouched.name == "returnToMenu" {
+                    // Transition to the main menu scene:'
+                    
+                    self.view?.presentScene(
+                        MenuScene(size: self.size),
+                        transition: .crossFade(withDuration: 0.6))
+                }
             }
+
         }
-    }
+        
+        
+        // asodf;nasdnf
+            }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             if touch.location(in: view).x < view!.frame.width/2 {
@@ -136,7 +152,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             laser.position = offset
             self.addChild(laser)
             energy -= 10
-            energyLabel?.text = "Energy: \(energy)"
             hud.setEnergyDisplay(newEnergy: energy)
         }
 
@@ -153,6 +168,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     override func update(_ currentTime: TimeInterval) {
+        if energy <= 30 && !gameOver{
+            hud.showButtons()
+            gameOver = true
+        }
         if lastTime == nil {
             lastTime = currentTime
         }
@@ -183,10 +202,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         rockTimer -= elapsed
         if rockTimer <= 0 {
             addRock()
-            rockTimer = ROCK_SPAWNRATE
+            rockTimer = ROCK_SPAWNRATE-(0.2*(15-Double(rocks)))
         }
-        scoreLabel?.text = "Score: \(score)"
-        energyLabel?.text = "Energy: \(energy)"
         hud.setHealthDisplay(newHealth: playerHealth)
         lastTime = currentTime
         if let accelData = self.motionManager.accelerometerData {
@@ -253,33 +270,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         switch other.categoryBitMask {
         case PhysicsCategory.enemy.rawValue:
 
-          if shielded {
-              energy -= 50
-              hud.setEnergyDisplay(newEnergy: energy)
-          }
-          else {
-              playerHealth -= 1
-              hud.setHealthDisplay(newHealth: playerHealth
-          }
-            
-
-            healthLabel?.text = "Health: \(playerHealth)"
-            let loc = other.node?.position
-            other.node?.run(SKAction.removeFromParent())
-            rocks -= 1
-            for _ in 1...3 {
-                let bits = Debris()
-                bits.position = loc!
-                self.addChild(bits)
-            }
-            if(arc4random_uniform(10) == 0) {
-                spawnPowerUp(location: loc!)
-            }
+        if shielded {
+            energy -= 50
+            hud.setEnergyDisplay(newEnergy: energy)
+        }
+        else {
+            playerHealth -= 1
+            hud.setHealthDisplay(newHealth: playerHealth)
+        }
+        let loc = other.node?.position
+        other.node?.run(SKAction.removeFromParent())
+        rocks -= 1
+        for _ in 1...3 {
+            let bits = Debris()
+            bits.position = loc!
+            self.addChild(bits)
+        }
+        if(arc4random_uniform(10) == 0) {
+            spawnPowerUp(location: loc!)
+        }
         case PhysicsCategory.powerup.rawValue:
             if let powertype = other.node?.name {
                 switch(powertype) {
                 case "healthpack":
                     playerHealth += 1
+                    if playerHealth > MAX_PLAYER_HEALTH {
+                        playerHealth = MAX_PLAYER_HEALTH
+                    }
                     break;
                 case "corrosive":
                     playerHealth -= 1
@@ -294,7 +311,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         default:
             print("Unknown!")
         }
-        
     }
     func laserCollision(laser: SKPhysicsBody, other:SKPhysicsBody) {
         switch other.categoryBitMask {
@@ -323,6 +339,7 @@ let ENERGY_RECHARGE = 0.1
 let SCORE_TICKRATE = 2.0
 let ROCK_SPAWNRATE = 5.0
 let MAX_PLAYER_SPEED = 300
+let MAX_PLAYER_HEALTH = 3
 
 enum PhysicsCategory:UInt32 {
     case spaceship = 1

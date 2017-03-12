@@ -20,6 +20,7 @@ class MenuScene: SKScene {
     let textureAtlas:SKTextureAtlas = SKTextureAtlas(named:"HUD")
     let startButton = SKSpriteNode()
     override func didMove(to view:SKView) {
+        self.scaleMode = SKSceneScaleMode.aspectFill
         self.anchorPoint = CGPoint(x:0.5, y:0.5)
         let backgroundImage = SKSpriteNode(imageNamed:"background-menu")
         backgroundImage.size = CGSize(width:1024, height:768)
