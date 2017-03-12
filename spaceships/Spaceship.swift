@@ -17,6 +17,7 @@ class Spaceship: SKSpriteNode, GameSprite {
         super.init(texture: SKTexture(imageNamed:"Spaceship"), color: .clear, size: initialSize)
         self.physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         self.physicsBody?.affectedByGravity = false
+        self.physicsBody?.linearDamping = 0
         self.physicsBody?.categoryBitMask = PhysicsCategory.spaceship.rawValue
         self.physicsBody?.contactTestBitMask = PhysicsCategory.enemy.rawValue | PhysicsCategory.powerup.rawValue
         self.physicsBody?.collisionBitMask = PhysicsCategory.enemy.rawValue | ~PhysicsCategory.debris.rawValue

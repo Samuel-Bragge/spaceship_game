@@ -17,6 +17,7 @@ class Laser:SKSpriteNode {
         super.init(texture: nil, color: .cyan, size: initialSize)
         self.physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         self.physicsBody?.affectedByGravity = false
+        self.physicsBody?.linearDamping = 0
         self.physicsBody?.categoryBitMask = PhysicsCategory.laser.rawValue
         self.physicsBody?.collisionBitMask = PhysicsCategory.enemy.rawValue
         self.physicsBody?.contactTestBitMask = PhysicsCategory.enemy.rawValue
