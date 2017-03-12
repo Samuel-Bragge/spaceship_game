@@ -179,6 +179,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if playerHealth <= 0 && !gameOver{
             hud.showButtons()
             gameOver = true
+            let loc = playerInstance?.position
+            for _ in 1...15 {
+                let bits = Debris()
+                bits.position = loc!
+                self.addChild(bits)
+            }
+            playerInstance?.run(SKAction.removeFromParent())
         }
         if lastTime == nil {
             lastTime = currentTime
@@ -315,6 +322,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     playerHealth -= 1
                     hud.setHealthDisplay(newHealth: playerHealth)
                     hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+                    playerInstance?.run(SKAction.sequence([SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1)]))
                     break;
                 case "energy":
                     energy += 50
