@@ -18,6 +18,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var energy = 100
     var score = 0
     var rocks = 0
+    var shielded = false
     var energyTimer = ENERGY_RECHARGE
     var rockTimer = ROCK_SPAWNRATE
     var scoreTimer = SCORE_TICKRATE
@@ -97,8 +98,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if touch.location(in: view).x > view!.frame.width/2 {
                 fireLaser()
             }
-            else {
-                print("shields!")
+            else if energy >= 50{
+                shielded = true
+                playerInstance?.texture = SKTexture(imageNamed: "redship")
+            }
+        }
+    }
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches {
+            if touch.location(in: view).x < view!.frame.width/2 {
+                shielded = false
+                playerInstance?.texture = SKTexture(imageNamed:"Spaceship")
+            }
+        }
+    }
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches {
+            if touch.previousLocation(in: view).x < view!.frame.width/2 && touch.location(in: view).x > view!.frame.width/2 {
+                shielded = false
+                playerInstance?.texture = SKTexture(imageNamed:"Spaceship")
             }
         }
     }
@@ -134,6 +152,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let elapsed = currentTime - lastTime!
         energyTimer -= elapsed
         if energyTimer <= 0 {
+            if shielded {
+                energy -= 2
+                if energy < 50 {
+                    print("out of energy!")
+                    shielded = false
+                    playerInstance?.texture = SKTexture(imageNamed:"Spaceship")
+                }
+            }
             energy += 1
             if energy > 100 {
                 energy = 100
@@ -147,7 +173,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         rockTimer -= elapsed
         if rockTimer <= 0 {
-            print("rock \(Int(floor(currentTime*100)))")
             addRock()
             rockTimer = ROCK_SPAWNRATE
         }
@@ -217,7 +242,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func playerCollision(other:SKPhysicsBody) {
         switch other.categoryBitMask {
         case PhysicsCategory.enemy.rawValue:
-            playerHealth -= 1
+            if shielded {
+                playerHealth -= 1
+                energy -= 50
+            }
             healthLabel?.text = "Health: \(playerHealth)"
             let loc = other.node?.position
             other.node?.run(SKAction.removeFromParent())
@@ -231,7 +259,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 spawnPowerUp(location: loc!)
             }
         case PhysicsCategory.powerup.rawValue:
-            print("Power up!")
+            if let powertype = other.node?.name {
+                switch(powertype) {
+                case "healthpack":
+                    playerHealth += 1
+                    break;
+                case "corrosive":
+                    playerHealth -= 1
+                    break;
+                case "energy":
+                    energy += 50
+                    break;
+                default:
+                    break;
+            }
+        }
         default:
             print("Unknown!")
         }
