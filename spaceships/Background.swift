@@ -64,13 +64,13 @@ class Background: SKSpriteNode {
             backgroundSize.width {
             jumpAdjustment_x += backgroundSize.width
         }
-        else if adjustedPosition_x - playerProgress_x < 0 {
+        else if playerProgress_x - adjustedPosition_x < 0 {
             jumpAdjustment_x -= backgroundSize.width
         }
         if playerProgress_y - adjustedPosition_y > backgroundSize.height {
             jumpAdjustment_y += backgroundSize.height
         }
-        else if adjustedPosition_y - playerProgress_y < 0 {
+        else if playerProgress_y - adjustedPosition_y < 0 {
             jumpAdjustment_y -= backgroundSize.height
         }
         // Adjust this background forward as the world
