@@ -12,7 +12,8 @@ import CoreMotion
 class GameScene: SKScene, SKPhysicsContactDelegate {
     let motionManager = CMMotionManager()
     var playerInstance:SKSpriteNode?
-    var bossInstance:Boss?
+    var bossInstance: Boss?
+    var bossSpawn: BossSpawnAnimation?
     let playerSpeed:Double = 300
     let cam = SKCameraNode()
     let hud = HUD()
@@ -26,7 +27,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var energyTimer = ENERGY_RECHARGE
     var rockTimer = ROCK_SPAWNRATE
     var scoreTimer = SCORE_TICKRATE
-    var bossTimer = 15.0
+    var bossTimer = 5.0
+    var bossSpawnTimer = 4.0
+    var bossSpawnPosition:CGPoint?
     var bossBeamTimer = 3.0
     var lastTime:TimeInterval?
     let initialPlayerPosition = CGPoint(x:150, y:250)
@@ -269,16 +272,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        bossSpawnTimer -= elapsed
+        if bossSpawnTimer <= 0 {
+            bossSpawnPosition = CGPoint(x: (playerInstance?.position.x)!, y: (playerInstance?.position.y)!+200)
+            if bossSpawn == nil{
+                bossSpawn = BossSpawnAnimation()
+                bossSpawn?.spawnAnimation()
+                bossSpawn?.position = bossSpawnPosition!
+                self.addChild(bossSpawn!)
+            }
+            bossSpawnTimer = 59.0
+        }
         // boss spawn timer
         bossTimer -= elapsed
         if bossTimer <= 0 {
             if bossInstance == nil {
                 bossInstance = Boss()
                 bossInstance?.health = 10
-                bossInstance?.position = CGPoint(x: (playerInstance?.position.x)!, y: (playerInstance?.position.y)!+200)
+                bossInstance?.position = bossSpawnPosition!
                 self.addChild(bossInstance!)
             }
-            bossTimer = 120.0
+            bossTimer = 60.0
         }
         
         // update timer
@@ -436,6 +450,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // boss.loseHealth returns if boss is dead or not...rewards points accordingly
                 if boss.loseHealth(scene: self){
                     score += 100
+                    bossSpawnTimer = 134.0
                 }
                 laser.node?.run(SKAction.removeFromParent())
             }
