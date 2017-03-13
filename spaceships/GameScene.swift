@@ -27,8 +27,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var energyTimer = ENERGY_RECHARGE
     var rockTimer = ROCK_SPAWNRATE
     var scoreTimer = SCORE_TICKRATE
-    var bossTimer = 5.0
-    var bossSpawnTimer = 4.0
+    var bossTimer = 45.0
+    var bossSpawnTimer = 44.0
     var bossSpawnPosition:CGPoint?
     var bossBeamTimer = 3.0
     var lastTime:TimeInterval?
