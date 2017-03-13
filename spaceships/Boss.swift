@@ -10,13 +10,12 @@ import SpriteKit
 
 class Boss: SKSpriteNode, GameSprite {
     var initialSize:CGSize = CGSize(width:200, height:100)
-    //    var baseImage:SKSpriteNode = SKSpriteNode(imageNamed:"Spaceship")
     var health = 15
     
     func onTap() {
     }
     init() {
-        super.init(texture: nil, color: .gray, size: initialSize)
+        super.init(texture: SKTexture(imageNamed: "boss-ship"), color: .gray, size: initialSize)
         self.name = "Boss"
         self.physicsBody = SKPhysicsBody(rectangleOf: initialSize)
         self.physicsBody?.isDynamic = false
@@ -28,6 +27,7 @@ class Boss: SKSpriteNode, GameSprite {
             ~PhysicsCategory.damagedSpaceship.rawValue & ~PhysicsCategory.debris.rawValue
     }
     
+    // radial beam pulse
     func beamSpam(scene:SKScene) {
         if health > 0 {
             for i in 0...16 {
@@ -40,14 +40,20 @@ class Boss: SKSpriteNode, GameSprite {
         }
     }
     
-    func loseHealth(scene:SKScene) {
+    // **added bool death condition to know when to give player points
+    func loseHealth(scene:SKScene) -> Bool{
+        var dead = false
         health -= 1
         self.run(SKAction.sequence([SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1)]))
         if health <= 0 {
+            dead = true
             die(scene: scene)
+            return dead
         }
+        return dead
     }
     
+    // boss explodes into debris
     func die(scene:SKScene) {
         self.run(SKAction.removeFromParent())
         for i in 0...16 {

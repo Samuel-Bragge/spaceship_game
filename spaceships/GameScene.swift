@@ -37,6 +37,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         self.scaleMode = SKSceneScaleMode.aspectFill
         self.motionManager.startAccelerometerUpdates()
+        
         // Game Variables
         playerHealth = MAX_PLAYER_HEALTH
         energy = 100
@@ -48,20 +49,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.anchorPoint = .zero
         self.camera = cam
         self.physicsWorld.contactDelegate = self
+        
         // HUD initialization
         self.addChild(self.camera!)
         self.camera!.zPosition = 50
         hud.createHudNodes(screenSize: self.size)
         self.camera!.addChild(hud)
         
+        // player initialization
         let player = Spaceship()
         playerInstance = player
         player.position = CGPoint(x:150, y:150)
         self.addChild(player)
         
+        // starting asteroid count
         for _ in 1...15 {
             addRock()
         }
+        // initialize background
         for _ in 0..<3 {
             backgrounds.append(Background())
         }
@@ -69,9 +74,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //backgrounds[1].spawn(parentNode: self, imageName: "background-back", zPosition: -10, movementMultiplier: 0.5)
         //backgrounds[2].spawn(parentNode: self, imageName: "background-back", zPosition: -15, movementMultiplier: 1)
     }
+    
+    // asteroid spawn algorithm
     func addRock() {
         let rock = Asteroid()
         repeat {
+            
+            // randomly decide which side of screen to spawn
             var x_mult:Double = 1
             var y_mult:Double = 1
             if arc4random_uniform(2) == 0 {
@@ -82,25 +91,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             let rock_x = Double(playerInstance!.position.x)+x_mult*Double(arc4random_uniform(200)+100)
             let rock_y = Double(playerInstance!.position.y)+y_mult*Double(arc4random_uniform(200)+100)
-            
             rock.position = CGPoint(x:rock_x, y:rock_y)
+            
+            // generate safe dead zone around player
         } while(abs(rock.position.x-playerInstance!.position.x) < 100 && abs(rock.position.y-playerInstance!.position.y) < 100)
         self.addChild(rock)
+        // keep asteroid count
         rocks += 1
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             if !gameOver {
+                
+                // tap right side to fire
                 if touch.location(in: view).x > view!.frame.width/2 {
                     fireLaser()
                 }
+                // left side to shield if sufficient energy
                 else if energy >= 50{
                     shielded = true
                     playerInstance?.texture = SKTexture(imageNamed: "redship")
                 }
                 else if energy < 50 {
-                     hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+                    // **new function to update energy bar
+                    hud.insuffEnergyDisplay(newEnergy: energy)
+                    
+                    // **no longer needed
+                    hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
                 }
             }
             else {
@@ -139,6 +157,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // prevent permanent shielding
         for touch in touches {
             if touch.previousLocation(in: view).x < view!.frame.width/2 && touch.location(in: view).x > view!.frame.width/2 {
                 shielded = false
@@ -156,9 +175,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             laser.position = offset
             self.addChild(laser)
             energy -= 10
-            hud.setEnergyDisplay(newEnergy: energy)
         }
         else {
+            hud.insuffEnergyDisplay(newEnergy: energy)
+            
+            // **no longer needed
             hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
         }
     }
@@ -174,10 +195,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     override func update(_ currentTime: TimeInterval) {
+        // game over condition
         if playerHealth <= 0 && !gameOver{
             hud.showButtons()
             gameOver = true
             let loc = playerInstance?.position
+            
+            // Explosions!!!
             for _ in 1...15 {
                 let bits = Debris()
                 bits.position = loc!
@@ -185,6 +209,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             playerInstance?.run(SKAction.removeFromParent())
         }
+        
+        // timer to keep track of spawns and resource regeneration
         if lastTime == nil {
             lastTime = currentTime
         }
@@ -196,24 +222,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if shielded {
                 energy -= 2
                 if energy < 50 {
-                    hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+                    
+                    // shields power down
+                    hud.insuffEnergyDisplay(newEnergy: energy)
                     shielded = false
                     playerInstance?.texture = SKTexture(imageNamed:"Spaceship")
+                    
+                    // **no longer needed
+                    hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
                 }
             }
+            
+            // energy regeneration rate
             energy += 1
             if energy > 100 {
                 energy = 100
             }
-            hud.setEnergyDisplay(newEnergy: energy)
             energyTimer = ENERGY_RECHARGE
         }
+        
+        // score increases longer player stays alive
         scoreTimer -= elapsed
         if scoreTimer <= 0 {
             score += 3
-            hud.setScoreDisplay(newScore: score)
             scoreTimer = SCORE_TICKRATE
         }
+        
+        // asteroid spawn timer
         rockTimer -= elapsed
         if rockTimer <= 0 {
             addRock()
@@ -222,6 +257,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 bossInstance!.beamSpam(scene: self)
             }
         }
+        
+        // boss spawn timer
         bossTimer -= elapsed
         if bossTimer <= 0 {
             if bossInstance == nil {
@@ -233,11 +270,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             bossTimer = 120.0
         }
         
-        hud.setHealthDisplay(newHealth: playerHealth)
+        // update timer
         lastTime = currentTime
+        
+        // update background
         for background in backgrounds {
             background.updatePosition(playerProgress_x: (playerInstance?.position.x)!, playerProgress_y: (playerInstance?.position.y)!)
         }
+        
+        // Core Motion code
         if let accelData = self.motionManager.accelerometerData {
             var forceAmount: CGFloat
             var movement = CGVector()
@@ -264,6 +305,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 movement.dy = forceAmount
             }
             playerInstance?.physicsBody?.applyForce(movement)
+            
             // speed cap
             if (playerInstance?.physicsBody?.velocity.dx)! > CGFloat(MAX_PLAYER_SPEED) {
                 playerInstance?.physicsBody?.velocity.dx = CGFloat(MAX_PLAYER_SPEED)
@@ -278,8 +320,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 playerInstance?.physicsBody?.velocity.dy = CGFloat(-MAX_PLAYER_SPEED)
             }
         }
+        
+        // **new condition to prevent score from increasing after game over
+        if !gameOver{
+            hud.setScoreDisplay(newScore: score)
+        }
+        
+        // update health and energy bars
+        hud.setHealthDisplay(newHealth: playerHealth)
+        hud.setEnergyDisplay(newEnergy: energy)
 
     }
+    
     func didBegin(_ contact: SKPhysicsContact){
         let playerMask = PhysicsCategory.spaceship.rawValue | PhysicsCategory.damagedSpaceship.rawValue
         let laserMask = PhysicsCategory.laser.rawValue
@@ -298,25 +350,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
     }
+    
     func playerCollision(other:SKPhysicsBody) {
         switch other.categoryBitMask {
         case PhysicsCategory.enemy.rawValue:
-
         if shielded {
             energy -= 50
-            hud.setEnergyDisplay(newEnergy: energy)
             hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
         }
         else {
             playerHealth -= 1
+            
+            // boss contact = immediate death
             if other.node?.name == "Boss" {
                 playerHealth = 0
             }
-            hud.setHealthDisplay(newHealth: playerHealth)
-            hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+            // player flashes on hit
             playerInstance?.run(SKAction.sequence([SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1)]))
+            
+            // **no longer needed
+            hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
         }
         let loc = other.node?.position
+        
+        // asteroids and power ups disappear on collision
         if other.node?.name != "Boss" {
             other.node?.run(SKAction.removeFromParent())
         }
@@ -326,6 +383,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             bits.position = loc!
             self.addChild(bits)
         }
+        
+        // powerup drifting spawn rate
         if(arc4random_uniform(10) == 0) {
             spawnPowerUp(location: loc!)
         }
@@ -340,10 +399,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     break;
                 case "corrosive":
                     playerHealth -= 1
-                    hud.setHealthDisplay(newHealth: playerHealth)
-                    hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
                     playerInstance?.run(SKAction.sequence([SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1)]))
                     break;
+                    
+                    // **no longer needed
+                    hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
                 case "energy":
                     energy += 50
                     break;
@@ -361,10 +421,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         case PhysicsCategory.enemy.rawValue:
             if other.node?.name == "Boss" {
                 let boss = other.node as! Boss
-                boss.loseHealth(scene: self)
+                
+                // boss.loseHealth returns if boss is dead or not...rewards points accordingly
+                if boss.loseHealth(scene: self){
+                    score += 100
+                }
                 laser.node?.run(SKAction.removeFromParent())
             }
             else {
+                
+                // laser collides with asteroid
                 score += 10
                 laser.node?.run(SKAction.removeFromParent())
                 let loc = other.node?.position
@@ -375,7 +441,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     bits.position = loc!
                     self.addChild(bits)
                 }
-
+                
+                // powerup spawn rate from breaking asteroid
                 if(arc4random_uniform(10) == 0) {
                     spawnPowerUp(location: loc!)
                 }
@@ -387,6 +454,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 }
 
+// game constants
 let ENERGY_RECHARGE = 0.1
 let SCORE_TICKRATE = 2.0
 let ROCK_SPAWNRATE = 5.0
