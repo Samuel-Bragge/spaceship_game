@@ -27,6 +27,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var rockTimer = ROCK_SPAWNRATE
     var scoreTimer = SCORE_TICKRATE
     var bossTimer = 15.0
+    var bossBeamTimer = 3.0
     var lastTime:TimeInterval?
     let initialPlayerPosition = CGPoint(x:150, y:250)
     var playerProgress = CGFloat()
@@ -253,8 +254,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if rockTimer <= 0 {
             addRock()
             rockTimer = ROCK_SPAWNRATE-(0.2*(15-Double(rocks)))
+//            if bossInstance != nil {
+//                bossInstance!.beamSpam(scene: self)
+            //            }
+        }
+        
+        bossBeamTimer -= elapsed
+        if bossBeamTimer <= 0 || bossBeamTimer > 0.24 && bossBeamTimer <= 0.25 || bossBeamTimer > 0.49 && bossBeamTimer <= 0.5 {
             if bossInstance != nil {
                 bossInstance!.beamSpam(scene: self)
+                if bossBeamTimer <= 0 {
+                    bossBeamTimer = 3.0
+                }
             }
         }
         
