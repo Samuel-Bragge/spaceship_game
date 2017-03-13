@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1B15408D1E7618620050F2C5 /* Boss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B15408C1E7618620050F2C5 /* Boss.swift */; };
+		1B15408F1E761A530050F2C5 /* EnemyLaser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B15408E1E761A530050F2C5 /* EnemyLaser.swift */; };
 		1B28D98B1E74C2D90082B1F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B28D98A1E74C2D90082B1F9 /* AppDelegate.swift */; };
 		1B28D98D1E74C2D90082B1F9 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1B28D98C1E74C2D90082B1F9 /* GameScene.sks */; };
 		1B28D98F1E74C2D90082B1F9 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1B28D98E1E74C2D90082B1F9 /* Actions.sks */; };
@@ -46,6 +48,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1B15408C1E7618620050F2C5 /* Boss.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Boss.swift; sourceTree = "<group>"; };
+		1B15408E1E761A530050F2C5 /* EnemyLaser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnemyLaser.swift; sourceTree = "<group>"; };
 		1B28D9871E74C2D90082B1F9 /* spaceships.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = spaceships.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B28D98A1E74C2D90082B1F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1B28D98C1E74C2D90082B1F9 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -139,6 +143,8 @@
 				1B28D9991E74C2D90082B1F9 /* LaunchScreen.storyboard */,
 				1B28D99C1E74C2D90082B1F9 /* Info.plist */,
 				1B9821DC1E74CE3400FD99B5 /* Laser.swift */,
+				1B15408C1E7618620050F2C5 /* Boss.swift */,
+				1B15408E1E761A530050F2C5 /* EnemyLaser.swift */,
 			);
 			path = spaceships;
 			sourceTree = "<group>";
@@ -302,10 +308,12 @@
 				1B28D9BF1E74C36B0082B1F9 /* GameSprite.swift in Sources */,
 				1B28D9911E74C2D90082B1F9 /* GameScene.swift in Sources */,
 				1B28D9931E74C2D90082B1F9 /* GameViewController.swift in Sources */,
+				1B15408F1E761A530050F2C5 /* EnemyLaser.swift in Sources */,
 				1B28D98B1E74C2D90082B1F9 /* AppDelegate.swift in Sources */,
 				1B28D9C51E74C3BA0082B1F9 /* Debris.swift in Sources */,
 				1B9821E11E74F88B00FD99B5 /* Powerup.swift in Sources */,
 				1B9821DD1E74CE3400FD99B5 /* Laser.swift in Sources */,
+				1B15408D1E7618620050F2C5 /* Boss.swift in Sources */,
 				1B9821E31E74FA3E00FD99B5 /* MenuScene.swift in Sources */,
 				B20E81AA1E750B0B00F5C4B2 /* HUD.swift in Sources */,
 				1B28D9C31E74C3A40082B1F9 /* Asteroid.swift in Sources */,

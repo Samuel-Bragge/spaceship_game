@@ -12,6 +12,7 @@ import CoreMotion
 class GameScene: SKScene, SKPhysicsContactDelegate {
     let motionManager = CMMotionManager()
     var playerInstance:SKSpriteNode?
+    var bossInstance:Boss?
     let playerSpeed:Double = 300
     let cam = SKCameraNode()
     let hud = HUD()
@@ -25,6 +26,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var energyTimer = ENERGY_RECHARGE
     var rockTimer = ROCK_SPAWNRATE
     var scoreTimer = SCORE_TICKRATE
+    var bossTimer = 10.0
     var lastTime:TimeInterval?
     let initialPlayerPosition = CGPoint(x:150, y:250)
     var playerProgress = CGFloat()
@@ -216,7 +218,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if rockTimer <= 0 {
             addRock()
             rockTimer = ROCK_SPAWNRATE-(0.2*(15-Double(rocks)))
+            if bossInstance != nil {
+                bossInstance!.beamSpam(scene: self)
+            }
         }
+        bossTimer -= elapsed
+        if bossTimer <= 0 {
+            if bossInstance == nil {
+                bossInstance = Boss()
+                bossInstance?.health = 10
+                bossInstance?.position = CGPoint(x: (playerInstance?.position.x)!, y: (playerInstance?.position.y)!+200)
+                self.addChild(bossInstance!)
+            }
+            bossTimer = 120.0
+        }
+        
         hud.setHealthDisplay(newHealth: playerHealth)
         lastTime = currentTime
         for background in backgrounds {
@@ -293,12 +309,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         else {
             playerHealth -= 1
+            if other.node?.name == "Boss" {
+                playerHealth = 0
+            }
             hud.setHealthDisplay(newHealth: playerHealth)
             hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
             playerInstance?.run(SKAction.sequence([SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1)]))
         }
         let loc = other.node?.position
-        other.node?.run(SKAction.removeFromParent())
+        if other.node?.name != "Boss" {
+            other.node?.run(SKAction.removeFromParent())
+        }
         rocks -= 1
         for _ in 1...3 {
             let bits = Debris()
@@ -338,18 +359,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func laserCollision(laser: SKPhysicsBody, other:SKPhysicsBody) {
         switch other.categoryBitMask {
         case PhysicsCategory.enemy.rawValue:
-            score += 10
-            laser.node?.run(SKAction.removeFromParent())
-            let loc = other.node?.position
-            other.node?.run(SKAction.removeFromParent())
-            rocks -= 1
-            for _ in 1...3 {
-                let bits = Debris()
-                bits.position = loc!
-                self.addChild(bits)
+            if other.node?.name == "Boss" {
+                let boss = other.node as! Boss
+                boss.loseHealth(scene: self)
+                laser.node?.run(SKAction.removeFromParent())
             }
-            if(arc4random_uniform(10) == 0) {
-                spawnPowerUp(location: loc!)
+            else {
+                score += 10
+                laser.node?.run(SKAction.removeFromParent())
+                let loc = other.node?.position
+                other.node?.run(SKAction.removeFromParent())
+                rocks -= 1
+                for _ in 1...3 {
+                    let bits = Debris()
+                    bits.position = loc!
+                    self.addChild(bits)
+                }
+
+                if(arc4random_uniform(10) == 0) {
+                    spawnPowerUp(location: loc!)
+                }
             }
         default:
             print("Unknown!")

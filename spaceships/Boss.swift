@@ -1,0 +1,66 @@
+//
+//  Boss.swift
+//  spaceships
+//
+//  Created by Justin Chang on 3/12/17.
+//  Copyright © 2017 Justin Chang. All rights reserved.
+//
+
+import SpriteKit
+
+class Boss: SKSpriteNode, GameSprite {
+    var initialSize:CGSize = CGSize(width:200, height:100)
+    //    var baseImage:SKSpriteNode = SKSpriteNode(imageNamed:"Spaceship")
+    var health = 15
+    
+    func onTap() {
+    }
+    init() {
+        super.init(texture: nil, color: .gray, size: initialSize)
+        self.name = "Boss"
+        self.physicsBody = SKPhysicsBody(rectangleOf: initialSize)
+        self.physicsBody?.isDynamic = false
+        self.physicsBody?.affectedByGravity = false
+        self.physicsBody?.linearDamping = 0
+        self.physicsBody?.affectedByGravity = false
+        self.physicsBody?.categoryBitMask = PhysicsCategory.enemy.rawValue
+        self.physicsBody?.collisionBitMask =
+            ~PhysicsCategory.damagedSpaceship.rawValue & ~PhysicsCategory.debris.rawValue
+    }
+    
+    func beamSpam(scene:SKScene) {
+        if health > 0 {
+            for i in 0...16 {
+                let enemyLaser = EnemyLaser()
+                enemyLaser.position = self.position
+                enemyLaser.zRotation = CGFloat(Double(i)/8.0*M_PI)+CGFloat(2.0*M_PI)
+                enemyLaser.physicsBody?.velocity = CGVector(dx: 300*cos(enemyLaser.zRotation)+CGFloat(M_PI/2), dy: 300*sin(enemyLaser.zRotation)+CGFloat(M_PI/2))
+                scene.addChild(enemyLaser)
+            }
+        }
+    }
+    
+    func loseHealth(scene:SKScene) {
+        health -= 1
+        self.run(SKAction.sequence([SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1)]))
+        if health <= 0 {
+            die(scene: scene)
+        }
+    }
+    
+    func die(scene:SKScene) {
+        self.run(SKAction.removeFromParent())
+        for i in 0...16 {
+            let bits = Debris()
+            bits.position = self.position
+            bits.zRotation = CGFloat(Double(i)/8.0*M_PI)+CGFloat(2.0*M_PI)
+            bits.physicsBody?.velocity = CGVector(dx: 300*cos(bits.zRotation)+CGFloat(M_PI/2), dy: 300*sin(bits.zRotation)+CGFloat(M_PI/2))
+            scene.addChild(bits)
+        }
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+}
