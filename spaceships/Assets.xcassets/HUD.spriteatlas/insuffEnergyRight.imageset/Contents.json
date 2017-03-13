@@ -2,11 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
+      "filename" : "barHorizontal_red_right.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "space-menu.png",
       "scale" : "2x"
     },
     {

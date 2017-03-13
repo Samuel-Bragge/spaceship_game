@@ -27,19 +27,21 @@ class MenuScene: SKScene {
         backgroundImage.zPosition = -1
         self.addChild(backgroundImage)
         
-        let logoText = SKLabelNode(fontNamed: "MarkerFelt-Wide")
+        // **changed text to look more relaxing for "shootin rocks" lol
+        // **adjusted positions of title and buttons to match new menu background
+        let logoText = SKLabelNode(fontNamed: "IowanOldStyle-Bold")
         logoText.text = "Let's shoot rocks in space "
-        logoText.position = CGPoint(x:0, y:100)
-        logoText.fontSize = 60
+        logoText.position = CGPoint(x:0, y:40)
+        logoText.fontSize = 45
         self.addChild(logoText)
         
         startButton.texture = textureAtlas.textureNamed("button")
         startButton.size = CGSize(width:295, height:76)
         startButton.name = "StartBtn"
-        startButton.position = CGPoint(x:0, y:-20)
+        startButton.position = CGPoint(x:100, y:-100)
         self.addChild(startButton)
         
-        let startText = SKLabelNode(fontNamed: "MarkerFelt-Wide")
+        let startText = SKLabelNode(fontNamed: "IowanOldStyle-Bold")
         startText.text = "START GAME"
         startText.verticalAlignmentMode = .center
         startText.position = CGPoint(x:0, y:2)
@@ -48,9 +50,12 @@ class MenuScene: SKScene {
         startText.zPosition = 5
         startButton.addChild(startText)
         
+        // start button animation
         let pulseAction = SKAction.sequence([SKAction.fadeAlpha(to: 0.5 , duration: 0.9), SKAction.fadeAlpha(to: 1, duration: 0.9)])
         startText.run(SKAction.repeatForever(pulseAction))
     }
+    
+    // press start button transitions to main game scene
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in (touches) {
             let location = touch.location(in:self)
@@ -60,7 +65,6 @@ class MenuScene: SKScene {
                 let transition = SKTransition.fade(withDuration: 0.8)
                 newScene?.scaleMode = SKSceneScaleMode.aspectFill
                 self.view?.presentScene(newScene!, transition:transition)
-                //                self.view?.presentScene(GameScene(size:self.size), transition:SKTransition.reveal(with: .down, duration: 1.0))
             }
         }
     }
