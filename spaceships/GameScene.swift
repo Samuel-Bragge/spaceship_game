@@ -26,7 +26,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var energyTimer = ENERGY_RECHARGE
     var rockTimer = ROCK_SPAWNRATE
     var scoreTimer = SCORE_TICKRATE
-    var bossTimer = 10.0
+    var bossTimer = 15.0
     var lastTime:TimeInterval?
     let initialPlayerPosition = CGPoint(x:150, y:250)
     var playerProgress = CGFloat()
