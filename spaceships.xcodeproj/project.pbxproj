@@ -28,6 +28,8 @@
 		1B9821E31E74FA3E00FD99B5 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9821E21E74FA3E00FD99B5 /* MenuScene.swift */; };
 		1B9821E51E74FA8700FD99B5 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9821E41E74FA8700FD99B5 /* Background.swift */; };
 		B20E81AA1E750B0B00F5C4B2 /* HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20E81A91E750B0B00F5C4B2 /* HUD.swift */; };
+		D5CBD5F31E770BA80099BE54 /* Sound in Resources */ = {isa = PBXBuildFile; fileRef = D5CBD5F21E770BA80099BE54 /* Sound */; };
+		D5CBD5F51E772D1B0099BE54 /* BossSpawnAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5CBD5F41E772D1B0099BE54 /* BossSpawnAnimation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +77,8 @@
 		1B9821E21E74FA3E00FD99B5 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 		1B9821E41E74FA8700FD99B5 /* Background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
 		B20E81A91E750B0B00F5C4B2 /* HUD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HUD.swift; sourceTree = "<group>"; };
+		D5CBD5F21E770BA80099BE54 /* Sound */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Sound; sourceTree = "<group>"; };
+		D5CBD5F41E772D1B0099BE54 /* BossSpawnAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BossSpawnAnimation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +132,8 @@
 				1B28D98A1E74C2D90082B1F9 /* AppDelegate.swift */,
 				1B28D98C1E74C2D90082B1F9 /* GameScene.sks */,
 				1B15408C1E7618620050F2C5 /* Boss.swift */,
+				D5CBD5F41E772D1B0099BE54 /* BossSpawnAnimation.swift */,
+				D5CBD5F21E770BA80099BE54 /* Sound */,
 				1B28D9C01E74C38E0082B1F9 /* Spaceship.swift */,
 				1B28D9C21E74C3A40082B1F9 /* Asteroid.swift */,
 				1B28D9BE1E74C36B0082B1F9 /* GameSprite.swift */,
@@ -275,6 +281,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5CBD5F31E770BA80099BE54 /* Sound in Resources */,
 				1B28D9961E74C2D90082B1F9 /* Main.storyboard in Resources */,
 				1B28D98D1E74C2D90082B1F9 /* GameScene.sks in Resources */,
 				1B28D9981E74C2D90082B1F9 /* Assets.xcassets in Resources */,
@@ -311,6 +318,7 @@
 				1B15408F1E761A530050F2C5 /* EnemyLaser.swift in Sources */,
 				1B28D98B1E74C2D90082B1F9 /* AppDelegate.swift in Sources */,
 				1B28D9C51E74C3BA0082B1F9 /* Debris.swift in Sources */,
+				D5CBD5F51E772D1B0099BE54 /* BossSpawnAnimation.swift in Sources */,
 				1B9821E11E74F88B00FD99B5 /* Powerup.swift in Sources */,
 				1B9821DD1E74CE3400FD99B5 /* Laser.swift in Sources */,
 				1B15408D1E7618620050F2C5 /* Boss.swift in Sources */,
