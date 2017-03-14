@@ -8,11 +8,13 @@
 
 import SpriteKit
 import CoreMotion
+import AVFoundation
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     let motionManager = CMMotionManager()
     var playerInstance:SKSpriteNode?
     var bossInstance:Boss?
+    var bossSpawn: BossSpawnAnimation?
     let playerSpeed:Double = 300
     let cam = SKCameraNode()
     let hud = HUD()
@@ -22,11 +24,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var energy = 100
     var score = 0
     var rocks = 0
+    var malfunctionTimer = 0.0
     var shielded = false
     var energyTimer = ENERGY_RECHARGE
     var rockTimer = ROCK_SPAWNRATE
     var scoreTimer = SCORE_TICKRATE
-    var bossTimer = 15.0
+    var bossTimer = 20.0
+    var bossSpawnTimer = 19.0
+    var bossSpawnPosition:CGPoint?
+    var bossBeamTimer = 4.5
     var lastTime:TimeInterval?
     let initialPlayerPosition = CGPoint(x:150, y:250)
     var playerProgress = CGFloat()
@@ -170,6 +176,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if energy >= 10 {
             let offset = CGPoint(x:(playerInstance?.position.x)! + cos(((playerInstance?.zRotation)!+CGFloat(M_PI/2)))*(playerInstance?.size.width)!*0.67, y:(playerInstance?.position.y)! + sin(((playerInstance?.zRotation)!+CGFloat(M_PI/2)))*(playerInstance?.size.width)!*0.67)
             let laser = Laser()
+            let laserSound = SKAction.playSoundFileNamed("Sound/laser.wav", waitForCompletion: false)
+            laser.run(laserSound)
             laser.physicsBody?.velocity = CGVector(dx: 300*cos(((playerInstance?.zRotation)!+CGFloat(M_PI/2))), dy: 300*sin(((playerInstance?.zRotation)!+CGFloat(M_PI/2))))
             laser.zRotation = (playerInstance?.zRotation)!
             laser.position = offset
@@ -178,7 +186,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         else {
             hud.insuffEnergyDisplay(newEnergy: energy)
-            
+            if malfunctionTimer <= 0 {
+                let laserMalfunction = SKAction.playSoundFileNamed("Sound/lasermalfunction.mp3", waitForCompletion: false)
+                self.run(laserMalfunction)
+            }
+            malfunctionTimer = 2.25
             // **no longer needed
             hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
         }
@@ -220,7 +232,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         if energyTimer <= 0 {
             if shielded {
-                energy -= 2
+                energy -= 4
                 if energy < 50 {
                     
                     // shields power down
@@ -234,7 +246,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             // energy regeneration rate
-            energy += 1
+            energy += 2
             if energy > 100 {
                 energy = 100
             }
@@ -242,6 +254,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // score increases longer player stays alive
+        malfunctionTimer -= elapsed
         scoreTimer -= elapsed
         if scoreTimer <= 0 {
             score += 3
@@ -258,16 +271,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        bossBeamTimer -= elapsed
+        if bossBeamTimer <= 0 || bossBeamTimer > 0.24 && bossBeamTimer <= 0.25 || bossBeamTimer > 0.49 && bossBeamTimer <= 0.5 {
+            if bossInstance != nil {
+                bossInstance!.beamSpam(scene: self)
+                if bossBeamTimer <= 0 {
+                    bossBeamTimer = 4.5
+                }
+            }
+        }
+        
+        bossSpawnTimer -= elapsed
+        if bossSpawnTimer <= 0 {
+            bossSpawnPosition = CGPoint(x: (playerInstance?.position.x)!, y: (playerInstance?.position.y)! + 200)
+            if bossSpawn == nil {
+                bossSpawn = BossSpawnAnimation()
+                bossSpawn?.spawnAnimation()
+                bossSpawn?.position = bossSpawnPosition!
+                self.addChild(bossSpawn!)
+            }
+            bossSpawnTimer = 59.0
+        }
+        
         // boss spawn timer
         bossTimer -= elapsed
         if bossTimer <= 0 {
             if bossInstance == nil {
                 bossInstance = Boss()
+//                *******************************************
+//                self.delegate.musicPlayer.volume = 0.0
+//                let bossMusic = SKAction.playSoundFileNamed("Sound/bossmusic.mp3", waitForCompletion: false)
+//                self.run(bossMusic, withKey: "bossbgm")
                 bossInstance?.health = 10
-                bossInstance?.position = CGPoint(x: (playerInstance?.position.x)!, y: (playerInstance?.position.y)!+200)
+                bossInstance?.position = bossSpawnPosition!
                 self.addChild(bossInstance!)
             }
-            bossTimer = 120.0
+            bossTimer = 60.0
         }
         
         // update timer
@@ -355,15 +394,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         switch other.categoryBitMask {
         case PhysicsCategory.enemy.rawValue:
         if shielded {
-            energy -= 50
+            if other.node?.name == "bosslaser" {
+                energy -= 15
+            }
+            else {
+                energy -= 50
+            }
             hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
         }
         else {
             playerHealth -= 1
-            
+            let asteroidSound = SKAction.playSoundFileNamed("Sound/danger.mp3", waitForCompletion: false)
+            self.run(asteroidSound)
             // boss contact = immediate death
             if other.node?.name == "Boss" {
-                playerHealth = 0
+                playerHealth -= 1
             }
             // player flashes on hit
             playerInstance?.run(SKAction.sequence([SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1)]))
@@ -398,6 +443,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     }
                     break;
                 case "corrosive":
+                    let poisonSound = SKAction.playSoundFileNamed("Sound/poison.mp3", waitForCompletion: false)
+                    self.run(poisonSound)
                     playerHealth -= 1
                     playerInstance?.run(SKAction.sequence([SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1)]))
                     break;
@@ -429,7 +476,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 laser.node?.run(SKAction.removeFromParent())
             }
             else {
-                
+                let asteroidSound = SKAction.playSoundFileNamed("Sound/asteroid.mp3", waitForCompletion: false)
+                self.run(asteroidSound)
                 // laser collides with asteroid
                 score += 10
                 laser.node?.run(SKAction.removeFromParent())
@@ -459,7 +507,7 @@ let ENERGY_RECHARGE = 0.1
 let SCORE_TICKRATE = 2.0
 let ROCK_SPAWNRATE = 5.0
 let MAX_PLAYER_SPEED = 300
-let MAX_PLAYER_HEALTH = 3
+let MAX_PLAYER_HEALTH = 5
 
 enum PhysicsCategory:UInt32 {
     case spaceship = 1

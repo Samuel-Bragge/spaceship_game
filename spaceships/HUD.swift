@@ -69,7 +69,7 @@ class HUD: SKNode {
         // ***********************************************************************
         
         // new health bars
-        for index in 0..<3 {
+        for index in 0..<5 {
             let newHealthNode = SKSpriteNode(texture: textureAtlas.textureNamed("healthBar"))
             newHealthNode.size = CGSize(width: 30, height: 20)
             let xPos = -cameraOrigin.x + CGFloat(index * 35) + 55

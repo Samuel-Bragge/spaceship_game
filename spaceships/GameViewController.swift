@@ -25,7 +25,7 @@ class GameViewController: UIViewController {
         skView.ignoresSiblingOrder = true
         menuScene.size = view.bounds.size
         skView.presentScene(menuScene)
-        // Start the background music:
+//         Start the background music:
         if let musicPath = Bundle.main.path(forResource:
             "Sound/BackgroundMusic.mp3", ofType: nil) {
             let url = URL(fileURLWithPath: musicPath)
@@ -35,6 +35,7 @@ class GameViewController: UIViewController {
                 musicPlayer.numberOfLoops = -1
                 musicPlayer.prepareToPlay()
                 musicPlayer.play()
+                musicPlayer.volume = 0.7
             }
             catch { /* Couldn't load music file */ }
         }

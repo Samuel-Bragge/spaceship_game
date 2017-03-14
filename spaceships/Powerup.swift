@@ -15,20 +15,21 @@ class Powerup: SKSpriteNode, GameSprite {
     func onTap() {
     }
     init() {
-        super.init(texture: nil, color: .red, size: initialSize)
+//        super.init(texture: nil, color: .red, size: initialSize)
+       
         power = Int(arc4random_uniform(3))
         switch(power!) {
         case 0:
-            self.color = .red; // health
+             super.init(texture: SKTexture(imageNamed:"red"), color: .clear, size: initialSize) //heath
             self.name = "healthpack"
         case 1:
-            self.color = .green; // hurt
+            super.init(texture: SKTexture(imageNamed:"green"), color: .clear, size: initialSize) // hurt
             self.name = "corrosive"
         case 2:
-            self.color = .blue; // energy
+            super.init(texture: SKTexture(imageNamed:"blue"), color: .clear, size: initialSize) // energy
             self.name = "energy"
         default:
-            self.color = .white; // wtf
+            super.init(texture: SKTexture(imageNamed:"meteorGrey_big"), color: .clear, size: initialSize) // wtf
             self.name = "error"
         }
         self.physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
