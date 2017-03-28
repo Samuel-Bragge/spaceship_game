@@ -123,9 +123,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     // **new function to update energy bar
                     hud.insuffEnergyDisplay(newEnergy: energy)
                     
-                    // **no longer needed
-                    hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
-                }
+                                    }
             }
             else {
                 let location = touch.location(in: self)
@@ -191,8 +189,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.run(laserMalfunction)
             }
             malfunctionTimer = 2.25
-            // **no longer needed
-            hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+            
         }
     }
     
@@ -204,8 +201,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didSimulatePhysics() {
         self.camera!.position = playerInstance!.position
-        
     }
+    
     override func update(_ currentTime: TimeInterval) {
         // game over condition
         if playerHealth <= 0 && !gameOver{
@@ -240,8 +237,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     shielded = false
                     playerInstance?.texture = SKTexture(imageNamed:"Spaceship")
                     
-                    // **no longer needed
-                    hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+                    
                 }
             }
             
@@ -281,12 +277,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        // boss spawn animation
         bossSpawnTimer -= elapsed
         if bossSpawnTimer <= 0 {
             bossSpawnPosition = CGPoint(x: (playerInstance?.position.x)!, y: (playerInstance?.position.y)! + 200)
             if bossSpawn == nil {
                 bossSpawn = BossSpawnAnimation()
                 bossSpawn?.spawnAnimation()
+                print(bossSpawnPosition)
                 bossSpawn?.position = bossSpawnPosition!
                 self.addChild(bossSpawn!)
             }
@@ -296,14 +294,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // boss spawn timer
         bossTimer -= elapsed
         if bossTimer <= 0 {
-            if bossInstance == nil {
+            if bossInstance != nil {
+            } else {
                 bossInstance = Boss()
-//                *******************************************
-//                self.delegate.musicPlayer.volume = 0.0
-//                let bossMusic = SKAction.playSoundFileNamed("Sound/bossmusic.mp3", waitForCompletion: false)
-//                self.run(bossMusic, withKey: "bossbgm")
+                print("Boss respawns.")
+                hud.addIndicator()
+                hud.addChild((hud.indicator!))
+                //                *******************************************
+                //                self.delegate.musicPlayer.volume = 0.0
+                //                let bossMusic = SKAction.playSoundFileNamed("Sound/bossmusic.mp3", waitForCompletion: false)
+                //                self.run(bossMusic, withKey: "bossbgm")
                 bossInstance?.health = 10
                 bossInstance?.position = bossSpawnPosition!
+                print("Added the indicator")
                 self.addChild(bossInstance!)
             }
             bossTimer = 60.0
@@ -343,7 +346,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else if accelData.acceleration.x < -0.15 {
                 movement.dy = forceAmount
             }
+            
+            
             playerInstance?.physicsBody?.applyForce(movement)
+            
             
             // speed cap
             if (playerInstance?.physicsBody?.velocity.dx)! > CGFloat(MAX_PLAYER_SPEED) {
@@ -368,7 +374,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // update health and energy bars
         hud.setHealthDisplay(newHealth: playerHealth)
         hud.setEnergyDisplay(newEnergy: energy)
-
+        
+        if let boss = bossInstance {
+            if let indicator = hud.indicator {
+                indicator.alpha = 1
+                hud.updateIndicator(boss: boss, player: playerInstance as! Spaceship)
+            }
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact){
@@ -400,7 +412,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else {
                 energy -= 50
             }
-            hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+            
         }
         else {
             playerHealth -= 1
@@ -413,8 +425,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // player flashes on hit
             playerInstance?.run(SKAction.sequence([SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1)]))
             
-            // **no longer needed
-            hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+            
         }
         let loc = other.node?.position
         
@@ -449,8 +460,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     playerInstance?.run(SKAction.sequence([SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0.2 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1)]))
                     break;
                     
-                    // **no longer needed
-                    hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+                    
                 case "energy":
                     energy += 50
                     break;
@@ -471,6 +481,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 // boss.loseHealth returns if boss is dead or not...rewards points accordingly
                 if boss.loseHealth(scene: self){
+                    if let deathSpawnNode = self.bossSpawn {
+                        deathSpawnNode.removeFromParent()
+                        self.bossSpawn = nil
+                    }
+                    if let deathNode = self.bossInstance {
+                        deathNode.removeFromParent()
+                        self.bossInstance = nil
+                    }
+                    hud.removeIndicator()
                     score += 100
                 }
                 laser.node?.run(SKAction.removeFromParent())
@@ -507,7 +526,7 @@ let ENERGY_RECHARGE = 0.1
 let SCORE_TICKRATE = 2.0
 let ROCK_SPAWNRATE = 5.0
 let MAX_PLAYER_SPEED = 300
-let MAX_PLAYER_HEALTH = 5
+let MAX_PLAYER_HEALTH = 100
 
 enum PhysicsCategory:UInt32 {
     case spaceship = 1
@@ -516,4 +535,18 @@ enum PhysicsCategory:UInt32 {
     case laser = 8
     case powerup = 16
     case debris = 32
+    
+    
+    
+    // **no longer needed
+//    hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+    // **no longer needed
+//    hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+    // **no longer needed
+//    hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+//    hud.energyText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+    // **no longer needed
+//    hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
+    // **no longer needed
+//    hud.healthText.run(SKAction.sequence([SKAction.colorize(with: .red, colorBlendFactor: 1.0, duration: 0), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.fadeAlpha(to: 0 , duration: 0.1), SKAction.fadeAlpha(to: 1, duration: 0.1), SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0)]))
 }

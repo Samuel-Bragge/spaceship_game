@@ -26,4 +26,6 @@ class Spaceship: SKSpriteNode, GameSprite {
         super.init(coder: aDecoder)
     }
     
+    
+    
 }
