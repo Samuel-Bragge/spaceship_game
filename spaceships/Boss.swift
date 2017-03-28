@@ -37,8 +37,8 @@ class Boss: SKSpriteNode, GameSprite {
             for i in 0...16 {
                 let enemyLaser = EnemyLaser()
                 enemyLaser.position = self.position
-                enemyLaser.zRotation = CGFloat(Double(i)/8.0*M_PI)+CGFloat(2.0*M_PI)
-                enemyLaser.physicsBody?.velocity = CGVector(dx: 300*cos(enemyLaser.zRotation)+CGFloat(M_PI/2), dy: 300*sin(enemyLaser.zRotation)+CGFloat(M_PI/2))
+                enemyLaser.zRotation = CGFloat(Double(i)/8.0*Double.pi)+CGFloat(2.0*Double.pi)
+                enemyLaser.physicsBody?.velocity = CGVector(dx: 300*cos(enemyLaser.zRotation)+CGFloat(Double.pi/2), dy: 300*sin(enemyLaser.zRotation)+CGFloat(Double.pi/2))
                 enemyLaser.name = "bosslaser"
                 scene.addChild(enemyLaser)
             }
@@ -67,8 +67,8 @@ class Boss: SKSpriteNode, GameSprite {
         for i in 0...16 {
             let bits = Debris()
             bits.position = self.position
-            bits.zRotation = CGFloat(Double(i)/8.0*M_PI)+CGFloat(2.0*M_PI)
-            bits.physicsBody?.velocity = CGVector(dx: 300*cos(bits.zRotation)+CGFloat(M_PI/2), dy: 300*sin(bits.zRotation)+CGFloat(M_PI/2))
+            bits.zRotation = CGFloat(Double(i)/8.0*Double.pi)+CGFloat(2.0*Double.pi)
+            bits.physicsBody?.velocity = CGVector(dx: 300*cos(bits.zRotation)+CGFloat(Double.pi/2), dy: 300*sin(bits.zRotation)+CGFloat(Double.pi/2))
             scene.addChild(bits)
         }
     }

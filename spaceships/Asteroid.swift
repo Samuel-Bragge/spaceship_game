@@ -19,7 +19,7 @@ class Asteroid: SKSpriteNode, GameSprite {
         self.physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         self.physicsBody?.velocity = CGVector(dx:Int(arc4random_uniform(200))-100, dy:Int(arc4random_uniform(200))-100)
         self.physicsBody?.linearDamping = 0
-        self.zRotation = CGFloat(drand48()*M_PI*2.0)
+        self.zRotation = CGFloat(drand48()*Double.pi*2.0)
         self.physicsBody?.affectedByGravity = false
         self.physicsBody?.categoryBitMask = PhysicsCategory.enemy.rawValue
         self.physicsBody?.collisionBitMask =

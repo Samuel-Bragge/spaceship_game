@@ -54,6 +54,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.anchorPoint = .zero
         self.camera = cam
+        print(cam.position)
         self.physicsWorld.contactDelegate = self
         
         // HUD initialization
@@ -172,11 +173,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     func fireLaser() {
         if energy >= 10 {
-            let offset = CGPoint(x:(playerInstance?.position.x)! + cos(((playerInstance?.zRotation)!+CGFloat(M_PI/2)))*(playerInstance?.size.width)!*0.67, y:(playerInstance?.position.y)! + sin(((playerInstance?.zRotation)!+CGFloat(M_PI/2)))*(playerInstance?.size.width)!*0.67)
+            let offset = CGPoint(x:(playerInstance?.position.x)! + cos(((playerInstance?.zRotation)!+CGFloat(Double.pi/2)))*(playerInstance?.size.width)!*0.67, y:(playerInstance?.position.y)! + sin(((playerInstance?.zRotation)!+CGFloat(Double.pi/2)))*(playerInstance?.size.width)!*0.67)
             let laser = Laser()
             let laserSound = SKAction.playSoundFileNamed("Sound/laser.wav", waitForCompletion: false)
             laser.run(laserSound)
-            laser.physicsBody?.velocity = CGVector(dx: 300*cos(((playerInstance?.zRotation)!+CGFloat(M_PI/2))), dy: 300*sin(((playerInstance?.zRotation)!+CGFloat(M_PI/2))))
+            laser.physicsBody?.velocity = CGVector(dx: 300*cos(((playerInstance?.zRotation)!+CGFloat(Double.pi/2))), dy: 300*sin(((playerInstance?.zRotation)!+CGFloat(Double.pi/2))))
             laser.zRotation = (playerInstance?.zRotation)!
             laser.position = offset
             self.addChild(laser)
@@ -324,7 +325,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if let accelData = self.motionManager.accelerometerData {
             var forceAmount: CGFloat
             var movement = CGVector()
-            playerInstance?.zRotation = CGFloat(atan2(-accelData.acceleration.x,accelData.acceleration.y)-Double(M_PI/2))
+            playerInstance?.zRotation = CGFloat(atan2(-accelData.acceleration.x,accelData.acceleration.y)-Double(Double.pi/2))
             switch
             UIApplication.shared.statusBarOrientation {
             case .landscapeLeft:
