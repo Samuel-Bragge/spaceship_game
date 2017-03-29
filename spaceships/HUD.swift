@@ -264,9 +264,9 @@ class HUD: SKNode {
         indicator?.size = CGSize(width: 9, height: 12)
     }
     
-    func updateIndicator(boss: Boss, player: Player) {
-        let deltaX = boss.position.x - player.position.x
-        let deltaY = boss.position.y - player.position.y
+    func updateIndicator(target: SKSpriteNode, player: Player) {
+        let deltaX = target.position.x - player.position.x
+        let deltaY = target.position.y - player.position.y
         let angle = atan2(deltaY, deltaX)
         indicator?.zRotation = angle - CGFloat(Double.pi / 2)
         indicator?.position = CGPoint(x: (frame.width / 2) + cos(angle) * 50, y: (frame.height) + sin(angle) * 50)

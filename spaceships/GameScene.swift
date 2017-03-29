@@ -11,6 +11,7 @@ import CoreMotion
 import AVFoundation
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    let peerService = PeerServiceManager()
     let motionManager = CMMotionManager()
     let cam = SKCameraNode()
     let map = MapBoundaries()
@@ -18,6 +19,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var lastTime: TimeInterval?
     
     let player = Player()
+    var opponent:SKSpriteNode?
     var backgrounds: [Background] = []
     var malfunctionTimer = 0.0
     var playerProgress = CGFloat()
@@ -47,8 +49,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Game Variables
         hud.score = 0
         gameOver = false
+        opponent = SKSpriteNode(texture: SKTexture(imageNamed: "enemyPlayer"), color: .clear, size: (player.size))
+        opponent?.position = player.position
         self.addChild(player)
-        print(player.position)
+        self.addChild(opponent!)
+        // Add targeting indicator
+        hud.addIndicator()
+        hud.addChild((hud.indicator!))
+        peerService.delegate = self
+//        print(player.position)
         // initialize background
 //        for _ in 0..<3 {
             backgrounds.append(Background())
@@ -123,7 +132,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func fireLaser() {
         if player.energy >= 10 {
             let laser = Laser()
-            laser.fire(player: player)
+            laser.fire(player: player, peerManager: peerService)
             self.addChild(laser)
         }
         else {
@@ -258,6 +267,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else if (player.physicsBody?.velocity.dy)! < CGFloat(-MAX_PLAYER_SPEED) {
                 player.physicsBody?.velocity.dy = CGFloat(-MAX_PLAYER_SPEED)
             }
+            
+            // send new location to opponent
+            peerService.send(posInfo: [0, (player.position.x), (player.position.y), (player.zRotation)])
+            
+            // update targeting indicator
+            if let indicator = hud.indicator {
+                indicator.alpha = 1
+                hud.updateIndicator(target: opponent!, player: player)
+            }
         }
         
         // **new condition to prevent score from increasing after game over
@@ -270,6 +288,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         hud.setEnergyDisplay(newEnergy: player.energy)
     }
     
+}
+
+
+extension GameScene: PeerServiceManagerDelegate {
+    func connectedDevicesChanged(manager: PeerServiceManager, connectedDevices: [String]) {
+        OperationQueue.main.addOperation {
+            print("Connected to \(connectedDevices)")
+        }
+    }
+    func coordChanged(manager: PeerServiceManager, coord: [CGFloat]) {
+        OperationQueue.main.addOperation {
+            print("Received: \(coord)")
+            self.opponent?.position = CGPoint(x: coord[0], y: coord[1])
+            self.opponent?.zRotation = coord[2]
+        }
+    }
+    func enemyFired(manager: PeerServiceManager, info: [CGFloat]) {
+        OperationQueue.main.addOperation {
+            let newBeam = EnemyLaser()
+            newBeam.position = CGPoint(x: info[0], y: info[1])
+            newBeam.zRotation = info[2]
+            newBeam.physicsBody?.velocity = CGVector(dx: info[3], dy: info[4])
+            self.addChild(newBeam)
+        }
+    }
 }
 
 // game constants
