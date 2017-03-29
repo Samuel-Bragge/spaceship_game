@@ -20,7 +20,7 @@
 		1B28D9A61E74C2D90082B1F9 /* spaceshipsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B28D9A51E74C2D90082B1F9 /* spaceshipsTests.swift */; };
 		1B28D9B11E74C2D90082B1F9 /* spaceshipsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B28D9B01E74C2D90082B1F9 /* spaceshipsUITests.swift */; };
 		1B28D9BF1E74C36B0082B1F9 /* GameSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B28D9BE1E74C36B0082B1F9 /* GameSprite.swift */; };
-		1B28D9C11E74C38E0082B1F9 /* Spaceship.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B28D9C01E74C38E0082B1F9 /* Spaceship.swift */; };
+		1B28D9C11E74C38E0082B1F9 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B28D9C01E74C38E0082B1F9 /* Player.swift */; };
 		1B28D9C31E74C3A40082B1F9 /* Asteroid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B28D9C21E74C3A40082B1F9 /* Asteroid.swift */; };
 		1B28D9C51E74C3BA0082B1F9 /* Debris.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B28D9C41E74C3BA0082B1F9 /* Debris.swift */; };
 		1B9821DD1E74CE3400FD99B5 /* Laser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9821DC1E74CE3400FD99B5 /* Laser.swift */; };
@@ -69,7 +69,7 @@
 		1B28D9B01E74C2D90082B1F9 /* spaceshipsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = spaceshipsUITests.swift; sourceTree = "<group>"; };
 		1B28D9B21E74C2D90082B1F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1B28D9BE1E74C36B0082B1F9 /* GameSprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSprite.swift; sourceTree = "<group>"; };
-		1B28D9C01E74C38E0082B1F9 /* Spaceship.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Spaceship.swift; sourceTree = "<group>"; };
+		1B28D9C01E74C38E0082B1F9 /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		1B28D9C21E74C3A40082B1F9 /* Asteroid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asteroid.swift; sourceTree = "<group>"; };
 		1B28D9C41E74C3BA0082B1F9 /* Debris.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Debris.swift; sourceTree = "<group>"; };
 		1B9821DC1E74CE3400FD99B5 /* Laser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Laser.swift; sourceTree = "<group>"; };
@@ -134,21 +134,16 @@
 				1B28D98E1E74C2D90082B1F9 /* Actions.sks */,
 				1B28D98C1E74C2D90082B1F9 /* GameScene.sks */,
 				1B28D98A1E74C2D90082B1F9 /* AppDelegate.swift */,
-				1B28D9C21E74C3A40082B1F9 /* Asteroid.swift */,
 				1B9821E41E74FA8700FD99B5 /* Background.swift */,
-				1B15408C1E7618620050F2C5 /* Boss.swift */,
-				D5CBD5F41E772D1B0099BE54 /* BossSpawnAnimation.swift */,
 				1B28D9C41E74C3BA0082B1F9 /* Debris.swift */,
-				1B15408E1E761A530050F2C5 /* EnemyLaser.swift */,
 				1B28D9901E74C2D90082B1F9 /* GameScene.swift */,
-				1B28D9BE1E74C36B0082B1F9 /* GameSprite.swift */,
 				1B28D9921E74C2D90082B1F9 /* GameViewController.swift */,
 				B20E81A91E750B0B00F5C4B2 /* HUD.swift */,
 				1B9821DC1E74CE3400FD99B5 /* Laser.swift */,
 				1B9821E21E74FA3E00FD99B5 /* MenuScene.swift */,
-				1B9821E01E74F88B00FD99B5 /* Powerup.swift */,
-				1B28D9C01E74C38E0082B1F9 /* Spaceship.swift */,
+				1B28D9C01E74C38E0082B1F9 /* Player.swift */,
 				1B28D9971E74C2D90082B1F9 /* Assets.xcassets */,
+				B23FB7EE1E8B2B720033C7A7 /* Boss/Asteroids/Powerup */,
 				1B28D9991E74C2D90082B1F9 /* LaunchScreen.storyboard */,
 				1B28D9941E74C2D90082B1F9 /* Main.storyboard */,
 			);
@@ -171,6 +166,19 @@
 				1B28D9B21E74C2D90082B1F9 /* Info.plist */,
 			);
 			path = spaceshipsUITests;
+			sourceTree = "<group>";
+		};
+		B23FB7EE1E8B2B720033C7A7 /* Boss/Asteroids/Powerup */ = {
+			isa = PBXGroup;
+			children = (
+				1B28D9C21E74C3A40082B1F9 /* Asteroid.swift */,
+				1B15408C1E7618620050F2C5 /* Boss.swift */,
+				D5CBD5F41E772D1B0099BE54 /* BossSpawnAnimation.swift */,
+				1B15408E1E761A530050F2C5 /* EnemyLaser.swift */,
+				1B28D9BE1E74C36B0082B1F9 /* GameSprite.swift */,
+				1B9821E01E74F88B00FD99B5 /* Powerup.swift */,
+			);
+			name = Boss/Asteroids/Powerup;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -325,7 +333,7 @@
 				1B9821E31E74FA3E00FD99B5 /* MenuScene.swift in Sources */,
 				B20E81AA1E750B0B00F5C4B2 /* HUD.swift in Sources */,
 				1B28D9C31E74C3A40082B1F9 /* Asteroid.swift in Sources */,
-				1B28D9C11E74C38E0082B1F9 /* Spaceship.swift in Sources */,
+				1B28D9C11E74C38E0082B1F9 /* Player.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

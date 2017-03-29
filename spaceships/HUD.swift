@@ -10,7 +10,9 @@ import SpriteKit
 import UIKit
 
 class HUD: SKNode {
+    var score = 0
     let scoreText = SKLabelNode(text: "Score: 000000")
+    var scoreTickRate = 2.0
     let hiScoreText = SKLabelNode(text: "High Score: 000000")
     var energyBar: [SKSpriteNode] = []
     var emptyEnergyBar: [SKSpriteNode] = []
@@ -262,7 +264,7 @@ class HUD: SKNode {
         indicator?.size = CGSize(width: 9, height: 12)
     }
     
-    func updateIndicator(boss: Boss, player: Spaceship) {
+    func updateIndicator(boss: Boss, player: Player) {
         let deltaX = boss.position.x - player.position.x
         let deltaY = boss.position.y - player.position.y
         let angle = atan2(deltaY, deltaX)
