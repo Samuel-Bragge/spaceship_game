@@ -13,6 +13,7 @@ import AVFoundation
 class GameScene: SKScene, SKPhysicsContactDelegate {
     let motionManager = CMMotionManager()
     let cam = SKCameraNode()
+    let map = MapBoundaries()
     let hud = HUD()
     var lastTime: TimeInterval?
     
@@ -41,18 +42,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         hud.createHudNodes(screenSize: self.size)
         self.camera!.addChild(hud)
         
+        // Set map boundaries
+        self.addChild(map)
         // Game Variables
         hud.score = 0
         gameOver = false
         self.addChild(player)
-        
+        print(player.position)
         // initialize background
 //        for _ in 0..<3 {
             backgrounds.append(Background())
-//        }
+        //        }
         backgrounds[0].spawn(parentNode: self, imageName: "background-back", zPosition: -5, movementMultiplier: 1)
         //backgrounds[1].spawn(parentNode: self, imageName: "background-back", zPosition: -10, movementMultiplier: 0.5)
         //backgrounds[2].spawn(parentNode: self, imageName: "background-back", zPosition: -15, movementMultiplier: 1)
+    }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -136,7 +142,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: TimeInterval) {
         // game over condition
-        if player.health <= 0 && !gameOver{
+        if player.health <= 0 && !gameOver {
             hud.showButtons()
             gameOver = true
             let loc = player.position
@@ -170,7 +176,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             // energy regeneration rate
-            player.energy += 2
+            player.energy += player.energyRegen
             if player.energy > 100 {
                 player.energy = 100
             }
@@ -191,6 +197,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // update background
         for background in backgrounds {
             background.updatePosition(playerProgress_x: (player.position.x), playerProgress_y: (player.position.y))
+        }
+        
+        // Check if player is out of bounds
+        if map.inBounds(player: player) == false {
+            map.outOfBoundsTimer -= elapsed
+            print(map.outOfBoundsTimer)
+            player.energyRegen = 0
+            if map.outOfBoundsTimer <= 0 {
+                player.energy -= 2
+                if player.energy <= 0 {
+                    player.energy = 0
+                    player.health -= 2
+                }
+                map.outOfBoundsTimer = OUT_OF_BOUNDS_TICK
+            }
+        } else {
+            player.energyRegen = 2
+            map.outOfBoundsTimer = 5
         }
         
         // ******* Core Motion code *******
@@ -251,12 +275,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 // game constants
 let ENERGY_RECHARGE = 0.1
 let SCORE_TICKRATE = 2.0
+let OUT_OF_BOUNDS_TICK = 0.2
 let MAX_PLAYER_SPEED = 300
 let MAX_PLAYER_HEALTH = 100
 
 enum PhysicsCategory:UInt32 {
     case spaceship = 1
     case damagedSpaceship = 2
+    case map = 3
     case enemy = 4
     case laser = 8
     case powerup = 16

@@ -12,6 +12,7 @@ class Player: SKSpriteNode {
     var energy = 100
     var shielded = false
     var energyRefreshRate = 0.1
+    var energyRegen = 2
     var initialSize: CGSize = CGSize(width:50, height:50)
     var initialPos: CGPoint = CGPoint(x: 150, y: 250)
     
@@ -22,8 +23,11 @@ class Player: SKSpriteNode {
         self.physicsBody?.affectedByGravity = false
         self.physicsBody?.linearDamping = 0
         self.physicsBody?.categoryBitMask = PhysicsCategory.spaceship.rawValue
-        self.physicsBody?.contactTestBitMask = PhysicsCategory.enemy.rawValue | PhysicsCategory.powerup.rawValue
-        self.physicsBody?.collisionBitMask = PhysicsCategory.enemy.rawValue | ~PhysicsCategory.debris.rawValue
+        self.physicsBody?.contactTestBitMask = PhysicsCategory.map.rawValue
+        self.physicsBody?.collisionBitMask = 0
+        
+//        self.physicsBody?.contactTestBitMask = PhysicsCategory.enemy.rawValue | PhysicsCategory.powerup.rawValue
+//        self.physicsBody?.collisionBitMask = PhysicsCategory.enemy.rawValue | ~PhysicsCategory.debris.rawValue
     }
     
     func shieldsUp() {
