@@ -13,6 +13,7 @@ import AVFoundation
 class GameScene: SKScene, SKPhysicsContactDelegate {
     let motionManager = CMMotionManager()
     var playerInstance:SKSpriteNode?
+    var opponentInstance:SKSpriteNode?
     var bossInstance:Boss?
     var bossSpawn: BossSpawnAnimation?
     let playerSpeed:Double = 300
@@ -38,6 +39,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var playerProgress = CGFloat()
     var backgrounds: [Background] = []
     var gameOver = false
+    let peerService = PeerServiceManager()
     
     
     override func didMove(to view: SKView) {
@@ -68,6 +70,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         playerInstance = player
         player.position = CGPoint(x:150, y:150)
         self.addChild(player)
+        
+        // opponent initialization
+        let opponent = SKSpriteNode(texture: SKTexture(imageNamed: "enemyPlayer"), color: .clear, size: (playerInstance?.size)!)
+        opponentInstance = opponent
+        opponent.position = CGPoint(x:150, y:150)
+        self.addChild(opponent)
+        
+        // opponent detection indicator initialize
+        hud.addIndicator()
+        hud.addChild((hud.indicator!))
+        
+        // Matchmaking initialization
+        peerService.delegate = self
         
         // starting asteroid count
         for _ in 1...15 {
@@ -299,8 +314,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             } else {
                 bossInstance = Boss()
                 print("Boss respawns.")
-                hud.addIndicator()
-                hud.addChild((hud.indicator!))
+//                hud.addIndicator()
+//                hud.addChild((hud.indicator!))
                 //                *******************************************
                 //                self.delegate.musicPlayer.volume = 0.0
                 //                let bossMusic = SKAction.playSoundFileNamed("Sound/bossmusic.mp3", waitForCompletion: false)
@@ -350,7 +365,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             
             playerInstance?.physicsBody?.applyForce(movement)
-            
+            peerService.send(posInfo: [(playerInstance?.position.x)!, (playerInstance?.position.y)!, (playerInstance?.zRotation)!])
             
             // speed cap
             if (playerInstance?.physicsBody?.velocity.dx)! > CGFloat(MAX_PLAYER_SPEED) {
@@ -376,12 +391,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         hud.setHealthDisplay(newHealth: playerHealth)
         hud.setEnergyDisplay(newEnergy: energy)
         
-        if let boss = bossInstance {
+//        if let boss = bossInstance {
             if let indicator = hud.indicator {
                 indicator.alpha = 1
-                hud.updateIndicator(boss: boss, player: playerInstance as! Spaceship)
+                hud.updateIndicator(boss: opponentInstance!, player: playerInstance as! Spaceship)
             }
-        }
+//        }
     }
     
     func didBegin(_ contact: SKPhysicsContact){
@@ -490,7 +505,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         deathNode.removeFromParent()
                         self.bossInstance = nil
                     }
-                    hud.removeIndicator()
+//                    hud.removeIndicator()
                     score += 100
                 }
                 laser.node?.run(SKAction.removeFromParent())
@@ -519,6 +534,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print("Unknown!")
         }
         
+    }
+}
+
+extension GameScene: PeerServiceManagerDelegate {
+    func connectedDevicesChanged(manager: PeerServiceManager, connectedDevices: [String]) {
+        OperationQueue.main.addOperation {
+            print("Connected to \(connectedDevices)")
+        }
+    }
+    func coordChanged(manager: PeerServiceManager, coord: [CGFloat]) {
+        OperationQueue.main.addOperation {
+            self.opponentInstance?.position = CGPoint(x: coord[0], y: coord[1])
+            self.opponentInstance?.zRotation = coord[2]
+        }
     }
 }
 
