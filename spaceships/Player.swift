@@ -36,12 +36,12 @@ class Player: SKSpriteNode {
 //        self.physicsBody?.collisionBitMask = PhysicsCategory.enemy.rawValue | ~PhysicsCategory.debris.rawValue
     }
     
-    func shieldsUp() {
+    func shieldsUp(manager: PeerServiceManager) {
         self.shielded = true
         self.texture = textureAtlas.textureNamed("redship")
     }
     
-    func shieldsDown() {
+    func shieldsDown(manager: PeerServiceManager) {
         shielded = false
         self.texture = textureAtlas.textureNamed("Spaceship")
     }

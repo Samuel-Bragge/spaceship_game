@@ -18,7 +18,9 @@ import SpriteKit
 
 class MenuScene: SKScene {
     let textureAtlas:SKTextureAtlas = SKTextureAtlas(named:"HUD")
-    let startButton = SKSpriteNode()
+    let hostButton = SKSpriteNode()
+    let joinButton = SKSpriteNode()
+    
     override func didMove(to view:SKView) {
         self.anchorPoint = CGPoint(x:0.5, y:0.5)
         self.scaleMode = SKSceneScaleMode.aspectFill
@@ -35,24 +37,40 @@ class MenuScene: SKScene {
         logoText.fontSize = 45
         self.addChild(logoText)
         
-        startButton.texture = textureAtlas.textureNamed("button")
-        startButton.size = CGSize(width:295, height:76)
-        startButton.name = "StartBtn"
-        startButton.position = CGPoint(x:100, y:-100)
-        self.addChild(startButton)
+        hostButton.texture = textureAtlas.textureNamed("button")
+        hostButton.size = CGSize(width:145, height:76)
+        hostButton.name = "HostBtn"
+        hostButton.position = CGPoint(x:50, y:-100)
+        self.addChild(hostButton)
         
-        let startText = SKLabelNode(fontNamed: "IowanOldStyle-Bold")
-        startText.text = "START GAME"
-        startText.verticalAlignmentMode = .center
-        startText.position = CGPoint(x:0, y:2)
-        startText.fontSize = 40
-        startText.name = "StartBtn"
-        startText.zPosition = 5
-        startButton.addChild(startText)
+        let hostText = SKLabelNode(fontNamed: "IowanOldStyle-Bold")
+        hostText.text = "HOST"
+        hostText.verticalAlignmentMode = .center
+        hostText.position = CGPoint(x:0, y:2)
+        hostText.fontSize = 40
+        hostText.name = "HostBtn"
+        hostText.zPosition = 5
+        hostButton.addChild(hostText)
+        
+        joinButton.texture = textureAtlas.textureNamed("button")
+        joinButton.size = CGSize(width:145, height:76)
+        joinButton.name = "JoinBtn"
+        joinButton.position = CGPoint(x:205, y:-100)
+        self.addChild(joinButton)
+        
+        let joinText = SKLabelNode(fontNamed: "IowanOldStyle-Bold")
+        joinText.text = "JOIN"
+        joinText.verticalAlignmentMode = .center
+        joinText.position = CGPoint(x:0, y:2)
+        joinText.fontSize = 40
+        joinText.name = "JoinBtn"
+        joinText.zPosition = 5
+        joinButton.addChild(joinText)
         
         // start button animation
         let pulseAction = SKAction.sequence([SKAction.fadeAlpha(to: 0.5 , duration: 0.9), SKAction.fadeAlpha(to: 1, duration: 0.9)])
-        startText.run(SKAction.repeatForever(pulseAction))
+        hostText.run(SKAction.repeatForever(pulseAction))
+        joinText.run(SKAction.repeatForever(pulseAction))
     }
     
     // press start button transitions to main game scene
@@ -60,8 +78,16 @@ class MenuScene: SKScene {
         for touch in (touches) {
             let location = touch.location(in:self)
             let nodeTouched = atPoint(location)
-            if nodeTouched.name == "StartBtn" {
+            if nodeTouched.name == "HostBtn" {
                 let newScene = GameScene(fileNamed:"GameScene")
+                newScene?.isHost = true
+                let transition = SKTransition.fade(withDuration: 0.8)
+                newScene?.scaleMode = SKSceneScaleMode.aspectFill
+                self.view?.presentScene(newScene!, transition:transition)
+            }
+            else if nodeTouched.name == "JoinBtn" {
+                let newScene = GameScene(fileNamed:"GameScene")
+                newScene?.isHost = false
                 let transition = SKTransition.fade(withDuration: 0.8)
                 newScene?.scaleMode = SKSceneScaleMode.aspectFill
                 self.view?.presentScene(newScene!, transition:transition)

@@ -29,6 +29,7 @@ class Laser: SKSpriteNode {
         self.physicsBody?.velocity = CGVector(dx: (player.physicsBody?.velocity.dx)! + 400*cos(((player.zRotation) + CGFloat(Double.pi/2))), dy: (player.physicsBody?.velocity.dy)! + 400*sin(((player.zRotation) + CGFloat(Double.pi/2))))
         self.zRotation = (player.zRotation)
         self.position = offset
+        peerManager.send(gameState: [1, self.position.x, self.position.y, self.zRotation, (self.physicsBody?.velocity.dx)!, (self.physicsBody?.velocity.dy)!])
         player.energy -= 10
         self.run(SKAction.sequence([SKAction.wait(forDuration: 2),SKAction.removeFromParent()]))
         return self
