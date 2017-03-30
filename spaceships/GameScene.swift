@@ -17,6 +17,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let map = MapBoundaries()
     let hud = HUD()
     var lastTime: TimeInterval?
+    let enemyNoShield = SKTexture(imageNamed: "enemyPlayer")
+    let enemyShielded = SKTexture(imageNamed: "enemyShield")
     
     let player = Player()
     var opponent:SKSpriteNode?
@@ -49,7 +51,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Game Variables
         hud.score = 0
         gameOver = false
-        opponent = SKSpriteNode(texture: SKTexture(imageNamed: "enemyPlayer"), color: .clear, size: (player.size))
+        opponent = SKSpriteNode(texture: enemyNoShield, color: .clear, size: (player.size))
         opponent?.position = player.position
         self.addChild(player)
         self.addChild(opponent!)
@@ -81,7 +83,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     
                 // tap/hold left side to shield
                 else if player.energy >= 50{
-                    player.shieldsUp()
+                    player.shieldsUp(manager: peerService)
                 }
                 else if player.energy < 50 {
                     // Flash energy bar
@@ -116,7 +118,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             // Turn off shield
             if touch.location(in: view).x < view!.frame.width/2 {
-                player.shieldsDown()
+                player.shieldsDown(manager: peerService)
             }
         }
     }
@@ -124,7 +126,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Turn off shield
         for touch in touches {
             if touch.previousLocation(in: view).x < view!.frame.width/2 && touch.location(in: view).x > view!.frame.width/2 {
-                player.shieldsDown()
+                player.shieldsDown(manager: peerService)
             }
         }
     }
@@ -181,7 +183,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     
                     // shields power down
                     hud.insuffEnergyDisplay(newEnergy: player.energy)
-                    player.shieldsDown()
+                    player.shieldsDown(manager: peerService)
                 }
             }
             
@@ -306,11 +308,14 @@ extension GameScene: PeerServiceManagerDelegate {
         }
     }
     func coordChanged(manager: PeerServiceManager, coord: [CGFloat]) {
-        //OperationQueue.main.addOperation {
-            print("Received: \(coord)")
-            self.opponent?.position = CGPoint(x: coord[0], y: coord[1])
-            self.opponent?.zRotation = coord[2]
-        //}
+        print("Received: \(coord)")
+        self.opponent?.position = CGPoint(x: coord[0], y: coord[1])
+        self.opponent?.zRotation = coord[2]
+        if coord[3] == 1.0 {
+            self.opponent?.texture = self.enemyShielded
+        } else {
+            self.opponent?.texture = self.enemyNoShield
+        }
     }
     func enemyFired(manager: PeerServiceManager, info: [CGFloat]) {
         //OperationQueue.main.addOperation {
@@ -318,6 +323,8 @@ extension GameScene: PeerServiceManagerDelegate {
             newBeam.position = CGPoint(x: info[0], y: info[1])
             newBeam.zRotation = info[2]
             newBeam.physicsBody?.velocity = CGVector(dx: info[3], dy: info[4])
+            let enemyBeamSound = SKAction.playSoundFileNamed("Sound/enemylaser.wav", waitForCompletion: false)
+            self.run(enemyBeamSound)
             self.addChild(newBeam)
         //}
     }

@@ -160,7 +160,9 @@ class HUD: SKNode {
     func showButtons() {
         // Set the button alpha to 0:
         restartButton.alpha = 0
+        restartButton.zPosition = 50
         menuButton.alpha = 0
+        menuButton.zPosition = 50
         // Add the button nodes to the HUD:
         self.addChild(restartButton)
         self.addChild(menuButton)
@@ -267,6 +269,17 @@ class HUD: SKNode {
     func updateIndicator(target: SKSpriteNode, player: Player) {
         let deltaX = target.position.x - player.position.x
         let deltaY = target.position.y - player.position.y
+        let rawDelta = sqrt(deltaX*deltaX + deltaY*deltaY)
+        print("raw distance: \(rawDelta)")
+        if rawDelta < 300 {
+            indicator?.texture = textureAtlas.textureNamed("indicatorArrow")
+        }
+        else if rawDelta >= 300 && rawDelta < 600 {
+            indicator?.texture = textureAtlas.textureNamed("indicatorArrow2")
+        }
+        else if rawDelta >= 600 {
+            indicator?.texture = textureAtlas.textureNamed("indicatorArrow3")
+        }
         let angle = atan2(deltaY, deltaX)
         indicator?.zRotation = angle - CGFloat(Double.pi / 2)
         indicator?.position = CGPoint(x: (frame.width / 2) + cos(angle) * 50, y: (frame.height) + sin(angle) * 50)
