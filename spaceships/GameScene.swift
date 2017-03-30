@@ -298,20 +298,20 @@ extension GameScene: PeerServiceManagerDelegate {
         }
     }
     func coordChanged(manager: PeerServiceManager, coord: [CGFloat]) {
-        OperationQueue.main.addOperation {
+        //OperationQueue.main.addOperation {
             print("Received: \(coord)")
             self.opponent?.position = CGPoint(x: coord[0], y: coord[1])
             self.opponent?.zRotation = coord[2]
-        }
+        //}
     }
     func enemyFired(manager: PeerServiceManager, info: [CGFloat]) {
-        OperationQueue.main.addOperation {
+        //OperationQueue.main.addOperation {
             let newBeam = EnemyLaser()
             newBeam.position = CGPoint(x: info[0], y: info[1])
             newBeam.zRotation = info[2]
             newBeam.physicsBody?.velocity = CGVector(dx: info[3], dy: info[4])
             self.addChild(newBeam)
-        }
+        //}
     }
 }
 
