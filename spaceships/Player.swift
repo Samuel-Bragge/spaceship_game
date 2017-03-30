@@ -14,11 +14,10 @@ class Player: SKSpriteNode {
     var energyRefreshRate = 0.1
     var energyRegen = 2
     var initialSize: CGSize = CGSize(width:50, height:50)
-    var initialPos: CGPoint = CGPoint(x: 150, y: 250)
+    var initialPos: CGPoint?
     
     init() {
         super.init(texture: SKTexture(imageNamed:"Spaceship"), color: .clear, size: initialSize)
-        self.position = initialPos
         self.physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         self.physicsBody?.affectedByGravity = false
         self.physicsBody?.linearDamping = 0

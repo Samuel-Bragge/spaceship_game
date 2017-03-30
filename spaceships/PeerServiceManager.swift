@@ -22,12 +22,6 @@ class PeerServiceManager: NSObject {
         self.serviceBrowser = MCNearbyServiceBrowser(peer: myPeerId, serviceType: PeerServiceType)
         
         super.init()
-        
-        self.serviceAdvertiser.delegate = self
-        self.serviceAdvertiser.startAdvertisingPeer()
-        
-        self.serviceBrowser.delegate = self
-        self.serviceBrowser.startBrowsingForPeers()
     }
     
     deinit {
@@ -40,6 +34,16 @@ class PeerServiceManager: NSObject {
         session.delegate = self
         return session
     }()
+    
+    func host() {
+        self.serviceAdvertiser.delegate = self
+        self.serviceAdvertiser.startAdvertisingPeer()
+    }
+    
+    func join() {
+        self.serviceBrowser.delegate = self
+        self.serviceBrowser.startBrowsingForPeers()
+    }
     
     func send(gameState:[CGFloat]) {
         NSLog("%@", "sendPoint: \(gameState) to \(session.connectedPeers.count) peers")

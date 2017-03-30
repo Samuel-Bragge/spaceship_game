@@ -19,6 +19,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var lastTime: TimeInterval?
     let enemyNoShield = SKTexture(imageNamed: "enemyPlayer")
     let enemyShielded = SKTexture(imageNamed: "enemyShield")
+    var isHost: Bool!
     
     let player = Player()
     var opponent:SKSpriteNode?
@@ -49,16 +50,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Set map boundaries
         self.addChild(map)
         // Game Variables
+
         hud.score = 0
         gameOver = false
         opponent = SKSpriteNode(texture: enemyNoShield, color: .clear, size: (player.size))
-        opponent?.position = player.position
+        if isHost {
+            player.position = CGPoint(x: 150, y: 300)
+            opponent?.position = CGPoint(x: 150, y: 200)
+        }
+        else {
+            player.position = CGPoint(x: 150, y: 200)
+            opponent?.position = CGPoint(x: 150, y: 300)
+        }
         self.addChild(player)
         self.addChild(opponent!)
         // Add targeting indicator
         hud.addIndicator()
         hud.addChild((hud.indicator!))
         peerService.delegate = self
+        if isHost {
+            peerService.host()
+        } else {
+            peerService.join()
+        }
 //        print(player.position)
         // initialize background
 //        for _ in 0..<3 {
