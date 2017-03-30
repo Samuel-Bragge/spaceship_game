@@ -19,9 +19,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let player = Player()
     var backgrounds: [Background] = []
+    var laserArray: [Laser] = []
+    var laserId: Int? = 0
+    var targetLaserId: Int? = 0
+    var rocksArray: [Asteroid] = []
     var malfunctionTimer = 0.0
     var playerProgress = CGFloat()
     var gameOver = false
+    
+    var mrOneShot = [Asteroid]()
     
     
     override func didMove(to view: SKView) {
@@ -33,7 +39,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Initialize camera
         self.anchorPoint = .zero
         self.camera = cam
-        print(cam.position)
+//        print(cam.position)
         self.physicsWorld.contactDelegate = self
         
         // Initialize HUD
@@ -48,7 +54,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         hud.score = 0
         gameOver = false
         self.addChild(player)
-        print(player.position)
+//        print(player.position)
         // initialize background
 //        for _ in 0..<3 {
             backgrounds.append(Background())
@@ -56,9 +62,74 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         backgrounds[0].spawn(parentNode: self, imageName: "background-back", zPosition: -5, movementMultiplier: 1)
         //backgrounds[1].spawn(parentNode: self, imageName: "background-back", zPosition: -10, movementMultiplier: 0.5)
         //backgrounds[2].spawn(parentNode: self, imageName: "background-back", zPosition: -15, movementMultiplier: 1)
+//        for _ in 0..<50 {
+//            let asteroid = Asteroid()
+//            asteroid.position.x = 
+//        }
+//***** Randomized Asteroid Arena *****************
+//*****Re-enable after presentation ***************
+//        for _ in 1...50 {
+//            let asteroid = Asteroid()
+//            asteroid.spawn(player: player)
+//            rocksArray.append(asteroid)
+//            mrOneShot.append(asteroid)
+//        }
+//        for i in mrOneShot {
+//            print("Asteroid(x: \(i.position.x), y: \(i.position.y), z: \(i.zRotation))")
+//        }
+//
+//        for i in 0..<50 {
+//            self.addChild(rocksArray[i])
+//        }
+//*************************************************
+        let fixed = FixedAsteroidField()
+        fixed.spawn(scene: self)
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
+        
+        // Player collisions
+        if (contact.bodyA.categoryBitMask & PhysicsCategory.spaceship.rawValue) > 0 {
+            player.collision(other: contact.bodyB)
+        } else if (contact.bodyB.categoryBitMask & PhysicsCategory.spaceship.rawValue) > 0 {
+                player.collision(other: contact.bodyA)
+        }
+        
+        // Laser collisions
+        if (contact.bodyA.categoryBitMask & PhysicsCategory.laser.rawValue) > 0 {
+            for i in 0...laserArray.count {
+                if laserArray[i].physicsBody == contact.bodyA {
+                    if (contact.bodyB.categoryBitMask & PhysicsCategory.spaceship.rawValue) < 1 {
+                        targetLaserId = laserArray[i].primaryKey
+                        laserArray[i].removeFromParent()
+                        laserArray.remove(at: i)
+                        print("ID of hit laser: \(targetLaserId)")
+                        print("Laser destroyed on collision with asteroid - Case: A")
+                        break
+                    }
+                }
+            }
+        } else if (contact.bodyB.categoryBitMask & PhysicsCategory.laser.rawValue) > 0 {
+            for i in 0..<laserArray.count {
+                if laserArray[i].physicsBody == contact.bodyB {
+                    if (contact.bodyA.categoryBitMask & PhysicsCategory.spaceship.rawValue) < 1 {
+                        targetLaserId = laserArray[i].primaryKey
+                        laserArray[i].removeFromParent()
+                        laserArray.remove(at: i)
+                        print("ID of hit laser: \(targetLaserId)")
+                        print("Laser destroyed on collision with asteroid - Case: B")
+                        break
+                    }
+                }
+            }
+        }
+        
+        // Asteroid collisions
+        if (contact.bodyA.categoryBitMask & PhysicsCategory.enemy.rawValue) > 0 {
+            
+        } else if (contact.bodyB.categoryBitMask & PhysicsCategory.enemy.rawValue) > 0 {
+            
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -122,9 +193,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     func fireLaser() {
         if player.energy >= 10 {
+            laserId? += 1
             let laser = Laser()
-            laser.fire(player: player)
+            laser.fire(player: player).primaryKey = laserId
             self.addChild(laser)
+            
+            laserArray.append(laser)
+            print("# of lasers: \(laserArray.count)")
+            if laserArray.count > 12 {
+                laserArray.remove(at: 0)
+            }
+            
+//            for i in 0..<laserArray.count {
+//                print(laserArray[i].primaryKey)
+//            }
         }
         else {
             hud.insuffEnergyDisplay(newEnergy: player.energy)
@@ -133,9 +215,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.run(laserMalfunction)
             }
             malfunctionTimer = 2.25
-            
         }
     }
+    
     override func didSimulatePhysics() {
         self.camera!.position = player.position
     }
@@ -202,7 +284,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Check if player is out of bounds
         if map.inBounds(player: player) == false {
             map.outOfBoundsTimer -= elapsed
-            print(map.outOfBoundsTimer)
+//            print(map.outOfBoundsTimer)
             player.energyRegen = 0
             if map.outOfBoundsTimer <= 0 {
                 player.energy -= 2
@@ -225,9 +307,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             switch
             UIApplication.shared.statusBarOrientation {
             case .landscapeLeft:
-                forceAmount = 35
+                forceAmount = 10
             case .landscapeRight:
-                forceAmount = -35
+                forceAmount = -10
             default:
                 forceAmount = 0
             }
@@ -280,13 +362,14 @@ let MAX_PLAYER_SPEED = 300
 let MAX_PLAYER_HEALTH = 100
 
 enum PhysicsCategory:UInt32 {
-    case spaceship = 1
-    case damagedSpaceship = 2
-    case map = 3
-    case enemy = 4
-    case laser = 8
-    case powerup = 16
-    case debris = 32
+    case map = 0
+    case spaceship = 2
+    case damagedSpaceship = 4
+    case enemy = 8
+    case laser = 16
+    case enemyLaser = 32
+    case debris = 64
+    case powerup = 128
     
     
 }
