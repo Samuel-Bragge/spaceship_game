@@ -13,4 +13,5 @@ protocol PeerServiceManagerDelegate: class {
     func connectedDevicesChanged(manager: PeerServiceManager, connectedDevices: [String])
     func coordChanged(manager: PeerServiceManager, coord: [CGFloat])
     func enemyFired(manager: PeerServiceManager, info: [CGFloat])
+    func enemyDied(manager: PeerServiceManager)
 }

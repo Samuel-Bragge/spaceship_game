@@ -10,7 +10,7 @@ import Foundation
 import MultipeerConnectivity
 
 class PeerServiceManager: NSObject {
-    private let PeerServiceType = "example-boxes"
+    private let PeerServiceType = "space-shoot"
     var delegate:PeerServiceManagerDelegate?
     
     private let myPeerId = MCPeerID(displayName: UIDevice.current.name)
@@ -41,13 +41,13 @@ class PeerServiceManager: NSObject {
         return session
     }()
     
-    func send(posInfo:[CGFloat]) {
-        NSLog("%@", "sendPoint: \(posInfo) to \(session.connectedPeers.count) peers")
+    func send(gameState:[CGFloat]) {
+        NSLog("%@", "sendPoint: \(gameState) to \(session.connectedPeers.count) peers")
         
         if session.connectedPeers.count > 0 {
             do {
                 var blockString:String = ""
-                for i in posInfo {
+                for i in gameState {
                     blockString += ("\(String(describing:i)), ")
                 }
                 try self.session.send(blockString.data(using: .utf8)!, toPeers: session.connectedPeers, with: .reliable)
@@ -93,7 +93,14 @@ extension PeerServiceManager: MCSessionDelegate {
         let mode = CGFloat(Double((input?[0])!)!)
         switch(mode) {
         case 0.0:
-            self.delegate?.coordChanged(manager: self, coord: [CGFloat(Double(input![1])!), CGFloat(Double(input![2])!), CGFloat(Double(input![3])!)])
+            /*
+             input[0]: data mode: 0 = move command
+             input[1]: x coordinate
+             input[2]: y coordinate
+             input[3]: z rotation
+             input[4]: shield status
+            */
+            self.delegate?.coordChanged(manager: self, coord: [CGFloat(Double(input![1])!), CGFloat(Double(input![2])!), CGFloat(Double(input![3])!), CGFloat(Double(input![4])!)])
         case 1.0:
             /*
             input[0]: data mode: 1 = attack command
@@ -104,6 +111,8 @@ extension PeerServiceManager: MCSessionDelegate {
             input[5]: dy velocity
             */
             self.delegate?.enemyFired(manager: self, info: [CGFloat(Double(input![1])!), CGFloat(Double(input![2])!), CGFloat(Double(input![3])!), CGFloat(Double(input![4])!), CGFloat(Double(input![5])!)])
+        case 2.0:
+            self.delegate?.enemyDied(manager: self)
         default:
             break;
         }

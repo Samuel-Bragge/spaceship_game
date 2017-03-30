@@ -154,6 +154,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if player.health <= 0 && !gameOver {
             hud.showButtons()
             gameOver = true
+            peerService.send(gameState: [2.0])
             let loc = player.position
             
             // Explosions!!!
@@ -269,7 +270,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             // send new location to opponent
-            peerService.send(posInfo: [0, (player.position.x), (player.position.y), (player.zRotation)])
+            var shieldStatus:CGFloat
+            if player.shielded {
+                shieldStatus = 1.0
+            }
+            else {
+                shieldStatus = 0.0
+            }
+            peerService.send(gameState: [0, (player.position.x), (player.position.y), (player.zRotation), (shieldStatus)])
             
             // update targeting indicator
             if let indicator = hud.indicator {
@@ -312,6 +320,10 @@ extension GameScene: PeerServiceManagerDelegate {
             newBeam.physicsBody?.velocity = CGVector(dx: info[3], dy: info[4])
             self.addChild(newBeam)
         //}
+    }
+    func enemyDied(manager: PeerServiceManager) {
+        self.hud.showButtons()
+        self.gameOver = true
     }
 }
 
