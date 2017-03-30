@@ -293,7 +293,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else {
                 shieldStatus = 0.0
             }
-            peerService.send(gameState: [0, (player.position.x), (player.position.y), (player.zRotation), (shieldStatus)])
+            peerService.send(gameState: [0, (player.position.x), (player.position.y), (player.zRotation), (player.physicsBody?.velocity.dx)!, (player.physicsBody?.velocity.dy)!, (shieldStatus)])
             
             // update targeting indicator
             if let indicator = hud.indicator {
@@ -325,7 +325,8 @@ extension GameScene: PeerServiceManagerDelegate {
         print("Received: \(coord)")
         self.opponent?.position = CGPoint(x: coord[0], y: coord[1])
         self.opponent?.zRotation = coord[2]
-        if coord[3] == 1.0 {
+        self.opponent?.physicsBody?.velocity = CGVector(dx: coord[3], dy: coord[4])
+        if coord[5] == 1.0 {
             self.opponent?.texture = self.enemyShielded
         } else {
             self.opponent?.texture = self.enemyNoShield

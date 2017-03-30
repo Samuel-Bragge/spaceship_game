@@ -102,9 +102,11 @@ extension PeerServiceManager: MCSessionDelegate {
              input[1]: x coordinate
              input[2]: y coordinate
              input[3]: z rotation
-             input[4]: shield status
+             input[4]: dx velocity
+             input[5]: dy velocity
+             input[6]: shield status
             */
-            self.delegate?.coordChanged(manager: self, coord: [CGFloat(Double(input![1])!), CGFloat(Double(input![2])!), CGFloat(Double(input![3])!), CGFloat(Double(input![4])!)])
+            self.delegate?.coordChanged(manager: self, coord: [CGFloat(Double(input![1])!), CGFloat(Double(input![2])!), CGFloat(Double(input![3])!), CGFloat(Double(input![4])!), CGFloat(Double(input![5])!), CGFloat(Double(input![6])!)])
         case 1.0:
             /*
             input[0]: data mode: 1 = attack command

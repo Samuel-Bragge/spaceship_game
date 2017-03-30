@@ -32,13 +32,13 @@ class Player: SKSpriteNode {
     func shieldsUp(manager: PeerServiceManager) {
         self.shielded = true
         self.texture = SKTexture(imageNamed: "redship")
-        manager.send(gameState: [0, (self.position.x), (self.position.y), (self.zRotation), (1.0)])
+        manager.send(gameState: [0, (self.position.x), (self.position.y), (self.zRotation), (self.physicsBody?.velocity.dx)!, (self.physicsBody?.velocity.dy)!, (1.0)])
     }
     
     func shieldsDown(manager: PeerServiceManager) {
         shielded = false
         self.texture = SKTexture(imageNamed: "Spaceship")
-        manager.send(gameState: [0, (self.position.x), (self.position.y), (self.zRotation), (0.0)])
+        manager.send(gameState: [0, (self.position.x), (self.position.y), (self.zRotation), (self.physicsBody?.velocity.dx)!, (self.physicsBody?.velocity.dy)!, (0.0)])
     }
     
     required init?(coder aDecoder: NSCoder) {
