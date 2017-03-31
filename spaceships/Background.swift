@@ -12,7 +12,7 @@ class Background: SKSpriteNode {
     var jumpAdjustment_x = CGFloat(0)
     var jumpAdjustment_y = CGFloat(0)
     // A constant for background node size:
-    let backgroundSize = CGSize(width: 1024, height: 768)
+    let backgroundSize = CGSize(width: 5000, height: 5000)
     // Store the Backgrounds texture:
     var textureAtlas = SKTextureAtlas(named: "Backgrounds")
     
@@ -21,7 +21,7 @@ class Background: SKSpriteNode {
         // Position from the bottom left:
         self.anchorPoint = CGPoint.zero
         // Start backgrounds at the top of the ground (y: 30)
-        self.position = CGPoint(x: 0, y: 30)
+        self.position = CGPoint(x: -500, y: -500)
         // Control the order of the backgrounds with zPosition:
         self.zPosition = zPosition
         // Store the movement multiplier:

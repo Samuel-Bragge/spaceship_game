@@ -13,8 +13,8 @@ class MapBoundaries: SKSpriteNode {
     var outOfBoundsTimer: Double = 5
     
     init() {
-        super.init(texture: SKTexture(imageNamed: "static-background"), color: .clear, size: CGSize(width: 2000, height: 2000))
-        self.position = CGPoint(x: 0, y: 0)
+        super.init(texture: nil, color: .clear, size: CGSize(width: 5000, height: 5000))
+        self.position = CGPoint(x: -500, y: -500)
         self.anchorPoint = CGPoint(x: 0, y: 0)
         // test purposes
         self.zPosition = -3

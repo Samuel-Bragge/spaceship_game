@@ -17,7 +17,7 @@ class Asteroid: SKSpriteNode {
         let rand = arc4random_uniform(4)+1
         let whichRock = SKTexture(imageNamed: "meteorBrown_big\(rand)")
         super.init(texture: whichRock, color: .clear, size: whichRock.size())
-//        self.position = CGPoint(x: Double(arc4random_uniform(1878) + 61), y: Double(arc4random_uniform(1878) + 61))
+//        self.position = CGPoint(x: Double(arc4random_uniform(3878) + 61), y: Double(arc4random_uniform(3878) + 61))
         self.position = CGPoint(x: x, y: y)
         self.zRotation = z
         self.physicsBody = SKPhysicsBody(texture: whichRock, size: whichRock.size())
@@ -39,7 +39,7 @@ class Asteroid: SKSpriteNode {
     
     func spawn(player: Player) {
         while (abs(self.position.x - player.position.x) < 100 || abs(self.position.y - player.position.y) < 100){
-            self.position = CGPoint(x: Double(arc4random_uniform(1878) + 61), y: Double(arc4random_uniform(1878) + 61))
+            self.position = CGPoint(x: Double(arc4random_uniform(3878) + 61), y: Double(arc4random_uniform(3878) + 61))
         }
     }
     

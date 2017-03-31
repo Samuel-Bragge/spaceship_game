@@ -86,7 +86,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        for _ in 0..<3 {
             backgrounds.append(Background())
         //        }
-        backgrounds[0].spawn(parentNode: self, imageName: "background-back", zPosition: -5, movementMultiplier: 1)
+        backgrounds[0].spawn(parentNode: self, imageName: "space-background", zPosition: -5, movementMultiplier: 1)
         //backgrounds[1].spawn(parentNode: self, imageName: "background-back", zPosition: -10, movementMultiplier: 0.5)
         //backgrounds[2].spawn(parentNode: self, imageName: "background-back", zPosition: -15, movementMultiplier: 1)
 //        for _ in 0..<50 {
