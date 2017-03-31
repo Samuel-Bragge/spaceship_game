@@ -172,10 +172,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                     
                 // tap/hold left side to shield
-                else if player.energy >= 50{
+                else if player.energy >= 10{
                     player.shieldsUp(manager: peerService)
                 }
-                else if player.energy < 50 {
+                else if player.energy < 10 {
                     // Flash energy bar
                     hud.insuffEnergyDisplay(newEnergy: player.energy)
                 }
@@ -282,7 +282,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if player.energyRefreshRate <= 0 {
             if player.shielded {
                 player.energy -= 4
-                if player.energy < 50 {
+                if player.energy < 10 {
                     
                     // shields power down
                     hud.insuffEnergyDisplay(newEnergy: player.energy)
