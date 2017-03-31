@@ -18,9 +18,7 @@ import SpriteKit
 
 class MenuScene: SKScene {
     let textureAtlas:SKTextureAtlas = SKTextureAtlas(named:"HUD")
-    let hostButton = SKSpriteNode()
-    let joinButton = SKSpriteNode()
-    
+    let startButton = SKSpriteNode()
     override func didMove(to view:SKView) {
         self.anchorPoint = CGPoint(x:0.5, y:0.5)
         self.scaleMode = SKSceneScaleMode.aspectFill
@@ -37,14 +35,29 @@ class MenuScene: SKScene {
         logoText.fontSize = 45
         self.addChild(logoText)
         
+        startButton.texture = textureAtlas.textureNamed("button")
+        startButton.size = CGSize(width:295, height:76)
+        startButton.name = "StartBtn"
+        startButton.position = CGPoint(x:100, y:-100)
+        self.addChild(startButton)
+        
+        let startText = SKLabelNode(fontNamed: "IowanOldStyle-Bold")
+        startText.text = "START GAME"
+        startText.verticalAlignmentMode = .center
+        startText.position = CGPoint(x:0, y:2)
+        startText.fontSize = 40
+        startText.name = "StartBtn"
+        startText.zPosition = 5
+        startButton.addChild(startText)
+        
         // start button animation
         let pulseAction = SKAction.sequence([SKAction.fadeAlpha(to: 0.5 , duration: 0.9), SKAction.fadeAlpha(to: 1, duration: 0.9)])
+        startText.run(SKAction.repeatForever(pulseAction))
     }
     
     // press start button transitions to main game scene
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in (touches) {
-            print(touch)
             let location = touch.location(in:self)
             let nodeTouched = atPoint(location)
             if nodeTouched.name == "StartBtn" {

@@ -15,12 +15,12 @@ class Player: SKSpriteNode {
     var energyRegen = 2
     var damage = 0
     var initialSize: CGSize = CGSize(width:50, height:50)
-    var initialPos: CGPoint?
+    var initialPos: CGPoint = CGPoint(x: 150, y: 200)
     var textureAtlas = SKTextureAtlas(named: "Spaceship")
     
     init() {
-        
         super.init(texture: SKTexture(imageNamed:"Spaceship"), color: .clear, size: initialSize)
+        self.position = initialPos
 //        self.physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         self.physicsBody = SKPhysicsBody(texture: textureAtlas.textureNamed("Spaceship"), size: textureAtlas.textureNamed("Spaceship").size())
         self.physicsBody?.affectedByGravity = false
