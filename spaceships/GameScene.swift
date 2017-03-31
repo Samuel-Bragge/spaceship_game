@@ -27,6 +27,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var laserArray: [Laser] = []
     var laserId: Int? = 0
     var targetLaserId: Int? = 0
+    var enemyLaserArray: [EnemyLaser] = []
     var rocksArray: [Asteroid] = []
     var malfunctionTimer = 0.0
     var playerProgress = CGFloat()
@@ -117,9 +118,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Player collisions
         if (contact.bodyA.categoryBitMask & PhysicsCategory.spaceship.rawValue) > 0 {
-            player.collision(other: contact.bodyB)
+            player.collision(other: contact.bodyB, peerManager: peerService)
         } else if (contact.bodyB.categoryBitMask & PhysicsCategory.spaceship.rawValue) > 0 {
-                player.collision(other: contact.bodyA)
+                player.collision(other: contact.bodyA, peerManager: peerService)
         }
         
         // Laser collisions
@@ -130,6 +131,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         targetLaserId = laserArray[i].primaryKey
                         laserArray[i].removeFromParent()
                         laserArray.remove(at: i)
+                        peerService.send(gameState: [3.0, CGFloat(targetLaserId!)])
                         print("ID of hit laser: \(targetLaserId)")
                         print("Laser destroyed on collision with asteroid - Case: A")
                         break
@@ -143,6 +145,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         targetLaserId = laserArray[i].primaryKey
                         laserArray[i].removeFromParent()
                         laserArray.remove(at: i)
+                        peerService.send(gameState: [3.0, CGFloat(targetLaserId!)])
                         print("ID of hit laser: \(targetLaserId)")
                         print("Laser destroyed on collision with asteroid - Case: B")
                         break
@@ -224,6 +227,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let laser = Laser()
             laser.fire(player: player, peerManager: peerService)
             laser.primaryKey = laserId
+            self.peerService.send(gameState: [1, laser.position.x, laser.position.y, laser.zRotation, (laser.physicsBody?.velocity.dx)!, (laser.physicsBody?.velocity.dy)!, CGFloat(Double(laser.primaryKey!))])
             self.addChild(laser)
             
             laserArray.append(laser)
@@ -423,6 +427,8 @@ extension GameScene: PeerServiceManagerDelegate {
             newBeam.position = CGPoint(x: info[0], y: info[1])
             newBeam.zRotation = info[2]
             newBeam.physicsBody?.velocity = CGVector(dx: info[3], dy: info[4])
+            newBeam.name = String(describing: Int(info[5]))
+            enemyLaserArray.append(newBeam)
             let enemyBeamSound = SKAction.playSoundFileNamed("Sound/enemylaser.wav", waitForCompletion: false)
             self.run(enemyBeamSound)
             self.addChild(newBeam)
@@ -431,6 +437,16 @@ extension GameScene: PeerServiceManagerDelegate {
     func enemyDied(manager: PeerServiceManager) {
         self.hud.showButtons()
         self.gameOver = true
+    }
+    func removeShot(manager: PeerServiceManager, info: [CGFloat]) {
+        print("remove shot: \(info)")
+        for i in self.enemyLaserArray {
+            print(i.name!, String(Int(info[0])))
+            if i.name == String(Int(info[0])) {
+                i.removeFromParent()
+//                self.enemyLaserArray.remove(at: i.index(ofAccessibilityElement: self.enemyLaserArray))
+            }
+        }
     }
 }
 

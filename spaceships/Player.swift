@@ -47,12 +47,23 @@ class Player: SKSpriteNode {
         manager.send(gameState: [0, (self.position.x), (self.position.y), (self.zRotation), (self.physicsBody?.velocity.dx)!, (self.physicsBody?.velocity.dy)!, (0.0)])
     }
     
-    func collision(other: SKPhysicsBody) {
+    func collision(other: SKPhysicsBody, peerManager: PeerServiceManager) {
         switch other.categoryBitMask {
         case PhysicsCategory.enemy.rawValue:
             print("Player collided with an asteroid")
         case PhysicsCategory.enemyLaser.rawValue:
-            print("Player got hit by a laser")
+            print("Player got hit by a laser \(other.node as! EnemyLaser)")
+            if shielded {
+                self.energy -= 10
+                if self.energy < 0 {
+                    self.energy = 0
+                }
+            } else {
+                self.health -= 5
+            }
+            print("Collision-triggered removal attempt: \(String(describing: other.node?.name))")
+            peerManager.send(gameState: [3, CGFloat(Double((other.node?.name)!)!)])
+            other.node?.removeFromParent()
 //            let playerVelocity = sqrt(pow(Double((self.physicsBody?.velocity.dx)!), 2) + pow(Double((self.physicsBody?.velocity.dy)!), 2))
 //            let rockVelocity = sqrt(pow(Double(other.velocity.dx), 2) + pow(Double(other.velocity.dy), 2))
 //            

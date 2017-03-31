@@ -46,7 +46,7 @@ class PeerServiceManager: NSObject {
     }
     
     func send(gameState:[CGFloat]) {
-        NSLog("%@", "sendPoint: \(gameState) to \(session.connectedPeers.count) peers")
+        //NSLog("%@", "sendPoint: \(gameState) to \(session.connectedPeers.count) peers")
         
         if session.connectedPeers.count > 0 {
             do {
@@ -93,7 +93,7 @@ extension PeerServiceManager: MCSessionDelegate {
         NSLog("%@", "didReceiveData: \(data)")
         let str = String(data: data, encoding: .utf8)
         let input = str?.components(separatedBy: ", ")
-        print("(((\(String(describing: input)))))")
+//        print("(((\(String(describing: input)))))")
         let mode = CGFloat(Double((input?[0])!)!)
         switch(mode) {
         case 0.0:
@@ -115,10 +115,15 @@ extension PeerServiceManager: MCSessionDelegate {
             input[3]: z rotation
             input[4]: dx velocity
             input[5]: dy velocity
+            input[6]: laser ID
             */
-            self.delegate?.enemyFired(manager: self, info: [CGFloat(Double(input![1])!), CGFloat(Double(input![2])!), CGFloat(Double(input![3])!), CGFloat(Double(input![4])!), CGFloat(Double(input![5])!)])
+            self.delegate?.enemyFired(manager: self, info: [CGFloat(Double(input![1])!), CGFloat(Double(input![2])!), CGFloat(Double(input![3])!), CGFloat(Double(input![4])!), CGFloat(Double(input![5])!), CGFloat(Double(input![6])!)])
         case 2.0:
+            // input[0]: data mode: 2 = Game over state
             self.delegate?.enemyDied(manager: self)
+        case 3.0:
+            // input[0]: data mode: 3 = Remove laser
+            self.delegate?.removeShot(manager: self, info: [CGFloat(Double(input![1])!)])
         default:
             break;
         }

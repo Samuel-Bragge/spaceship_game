@@ -164,8 +164,10 @@ class HUD: SKNode {
         menuButton.alpha = 0
         menuButton.zPosition = 50
         // Add the button nodes to the HUD:
-        self.addChild(restartButton)
-        self.addChild(menuButton)
+        if restartButton.parent == nil {
+            self.addChild(restartButton)
+            self.addChild(menuButton)
+        }
         // Fade in the buttons:
         let fadeAnimation =
             SKAction.fadeAlpha(to: 1, duration: 0.4)
@@ -270,7 +272,6 @@ class HUD: SKNode {
         let deltaX = target.position.x - player.position.x
         let deltaY = target.position.y - player.position.y
         let rawDelta = sqrt(deltaX*deltaX + deltaY*deltaY)
-        print("raw distance: \(rawDelta)")
         if rawDelta < 300 {
             indicator?.texture = textureAtlas.textureNamed("indicatorArrow")
         }

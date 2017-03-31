@@ -19,7 +19,7 @@ class EnemyLaser:SKSpriteNode {
         self.physicsBody?.affectedByGravity = false
         self.physicsBody?.linearDamping = 0
         self.physicsBody?.affectedByGravity = false
-        self.physicsBody?.categoryBitMask = PhysicsCategory.enemy.rawValue
+        self.physicsBody?.categoryBitMask = PhysicsCategory.enemyLaser.rawValue
         self.physicsBody?.collisionBitMask =
             ~PhysicsCategory.damagedSpaceship.rawValue & ~PhysicsCategory.debris.rawValue & ~PhysicsCategory.enemy.rawValue
         self.run(SKAction.sequence([SKAction.wait(forDuration: 2),SKAction.removeFromParent()]))
