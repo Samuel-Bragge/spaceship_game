@@ -10,26 +10,27 @@ import SpriteKit
 
 class Laser: SKSpriteNode {
     var initialSize:CGSize = CGSize(width:3, height:15)
-
+    var primaryKey: Int?
+    
     init() {
         super.init(texture: nil, color: .cyan, size: initialSize)
         self.physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         self.physicsBody?.affectedByGravity = false
         self.physicsBody?.linearDamping = 0
         self.physicsBody?.categoryBitMask = PhysicsCategory.laser.rawValue
-        self.physicsBody?.collisionBitMask = PhysicsCategory.enemy.rawValue
-        self.physicsBody?.contactTestBitMask = PhysicsCategory.enemy.rawValue
-        self.run(SKAction.sequence([SKAction.wait(forDuration: 1),SKAction.removeFromParent()]))
+        self.physicsBody?.contactTestBitMask = PhysicsCategory.enemy.rawValue | PhysicsCategory.spaceship.rawValue
+        self.physicsBody?.collisionBitMask = 0
     }
     
-    func fire(player: Player) {
+    func fire(player: Player, peerManager: PeerServiceManager){
         let laserSound = SKAction.playSoundFileNamed("Sound/laser.wav", waitForCompletion: false)
         self.run(laserSound)
         let offset = CGPoint(x:(player.position.x) + cos(((player.zRotation) + CGFloat(Double.pi/2)))*(player.size.width)*0.34, y:(player.position.y) + sin(((player.zRotation) + CGFloat(Double.pi/2)))*(player.size.width)*0.34)
-        self.physicsBody?.velocity = CGVector(dx: (player.physicsBody?.velocity.dx)! + 300*cos(((player.zRotation) + CGFloat(Double.pi/2))), dy: (player.physicsBody?.velocity.dy)! + 300*sin(((player.zRotation) + CGFloat(Double.pi/2))))
+        self.physicsBody?.velocity = CGVector(dx: (player.physicsBody?.velocity.dx)! + 400*cos(((player.zRotation) + CGFloat(Double.pi/2))), dy: (player.physicsBody?.velocity.dy)! + 400*sin(((player.zRotation) + CGFloat(Double.pi/2))))
         self.zRotation = (player.zRotation)
         self.position = offset
         player.energy -= 10
+        self.run(SKAction.sequence([SKAction.wait(forDuration: 2),SKAction.removeFromParent()]))
     }
     
     required init?(coder aDecoder: NSCoder) {

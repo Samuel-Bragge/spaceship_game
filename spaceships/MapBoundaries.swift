@@ -13,20 +13,20 @@ class MapBoundaries: SKSpriteNode {
     var outOfBoundsTimer: Double = 5
     
     init() {
-        super.init(texture: nil, color: .red, size: CGSize(width: 1000, height: 1000))
+        super.init(texture: SKTexture(imageNamed: "static-background"), color: .clear, size: CGSize(width: 2000, height: 2000))
         self.position = CGPoint(x: 0, y: 0)
-        
+        self.anchorPoint = CGPoint(x: 0, y: 0)
         // test purposes
         self.zPosition = -3
-        self.alpha = 0.2
+//        self.alpha = 0.2
         
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
         self.physicsBody?.affectedByGravity = false
         self.physicsBody?.allowsRotation = false
         self.physicsBody?.isDynamic = false
         self.physicsBody?.categoryBitMask = PhysicsCategory.map.rawValue
-        self.physicsBody?.contactTestBitMask = PhysicsCategory.spaceship.rawValue
-        self.physicsBody?.collisionBitMask = 0
+        self.physicsBody?.contactTestBitMask = PhysicsCategory.spaceship.rawValue | PhysicsCategory.enemy.rawValue
+        self.physicsBody?.collisionBitMask = PhysicsCategory.map.rawValue
     }
     
     func inBounds(player: Player) -> Bool {

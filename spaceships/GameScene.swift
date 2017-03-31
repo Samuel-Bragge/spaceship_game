@@ -11,20 +11,33 @@ import CoreMotion
 import AVFoundation
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    let peerService = PeerServiceManager()
     let motionManager = CMMotionManager()
     let cam = SKCameraNode()
     let map = MapBoundaries()
     let hud = HUD()
     var lastTime: TimeInterval?
+    let enemyNoShield = SKTexture(imageNamed: "enemyPlayer")
+    let enemyShielded = SKTexture(imageNamed: "enemyShield")
+    var isHost: Bool!
     
     let player = Player()
+    var opponent:SKSpriteNode?
     var backgrounds: [Background] = []
+    var laserArray: [Laser] = []
+    var laserId: Int? = 0
+    var targetLaserId: Int? = 0
+    var enemyLaserArray: [EnemyLaser] = []
+    var rocksArray: [Asteroid] = []
     var malfunctionTimer = 0.0
     var playerProgress = CGFloat()
     var gameOver = false
     
+    var mrOneShot = [Asteroid]()
+    
     
     override func didMove(to view: SKView) {
+        print("Checkpoint 2")
         self.scaleMode = SKSceneScaleMode.aspectFill
         
         // Start Core Motion
@@ -33,7 +46,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Initialize camera
         self.anchorPoint = .zero
         self.camera = cam
-        print(cam.position)
+//        print(cam.position)
         self.physicsWorld.contactDelegate = self
         
         // Initialize HUD
@@ -45,10 +58,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Set map boundaries
         self.addChild(map)
         // Game Variables
+
         hud.score = 0
         gameOver = false
+        print(isHost)
+        opponent = SKSpriteNode(texture: enemyNoShield, color: .clear, size: (player.size))
+        if isHost {
+            player.position = CGPoint(x: 150, y: 300)
+            opponent?.position = CGPoint(x: 150, y: 200)
+        }
+        else {
+            player.position = CGPoint(x: 150, y: 200)
+            opponent?.position = CGPoint(x: 150, y: 300)
+        }
         self.addChild(player)
-        print(player.position)
+        self.addChild(opponent!)
+        // Add targeting indicator
+        hud.addIndicator()
+        hud.addChild((hud.indicator!))
+        peerService.delegate = self
+        if isHost {
+            peerService.host()
+        } else {
+            peerService.join()
+        }
+//        print(player.position)
         // initialize background
 //        for _ in 0..<3 {
             backgrounds.append(Background())
@@ -56,9 +90,76 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         backgrounds[0].spawn(parentNode: self, imageName: "background-back", zPosition: -5, movementMultiplier: 1)
         //backgrounds[1].spawn(parentNode: self, imageName: "background-back", zPosition: -10, movementMultiplier: 0.5)
         //backgrounds[2].spawn(parentNode: self, imageName: "background-back", zPosition: -15, movementMultiplier: 1)
+//        for _ in 0..<50 {
+//            let asteroid = Asteroid()
+//            asteroid.position.x = 
+//        }
+//***** Randomized Asteroid Arena *****************
+//*****Re-enable after presentation ***************
+//        for _ in 1...50 {
+//            let asteroid = Asteroid()
+//            asteroid.spawn(player: player)
+//            rocksArray.append(asteroid)
+//            mrOneShot.append(asteroid)
+//        }
+//        for i in mrOneShot {
+//            print("Asteroid(x: \(i.position.x), y: \(i.position.y), z: \(i.zRotation))")
+//        }
+//
+//        for i in 0..<50 {
+//            self.addChild(rocksArray[i])
+//        }
+//*************************************************
+        let fixed = FixedAsteroidField()
+        fixed.spawn(scene: self)
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
+        
+        // Player collisions
+        if (contact.bodyA.categoryBitMask & PhysicsCategory.spaceship.rawValue) > 0 {
+            player.collision(other: contact.bodyB, peerManager: peerService)
+        } else if (contact.bodyB.categoryBitMask & PhysicsCategory.spaceship.rawValue) > 0 {
+                player.collision(other: contact.bodyA, peerManager: peerService)
+        }
+        
+        // Laser collisions
+        if (contact.bodyA.categoryBitMask & PhysicsCategory.laser.rawValue) > 0 {
+            for i in 0...laserArray.count {
+                if laserArray[i].physicsBody == contact.bodyA {
+                    if (contact.bodyB.categoryBitMask & PhysicsCategory.spaceship.rawValue) < 1 {
+                        targetLaserId = laserArray[i].primaryKey
+                        laserArray[i].removeFromParent()
+                        laserArray.remove(at: i)
+                        peerService.send(gameState: [3.0, CGFloat(targetLaserId!)])
+                        print("ID of hit laser: \(targetLaserId)")
+                        print("Laser destroyed on collision with asteroid - Case: A")
+                        break
+                    }
+                }
+            }
+        } else if (contact.bodyB.categoryBitMask & PhysicsCategory.laser.rawValue) > 0 {
+            for i in 0..<laserArray.count {
+                if laserArray[i].physicsBody == contact.bodyB {
+                    if (contact.bodyA.categoryBitMask & PhysicsCategory.spaceship.rawValue) < 1 {
+                        targetLaserId = laserArray[i].primaryKey
+                        laserArray[i].removeFromParent()
+                        laserArray.remove(at: i)
+                        peerService.send(gameState: [3.0, CGFloat(targetLaserId!)])
+                        print("ID of hit laser: \(targetLaserId)")
+                        print("Laser destroyed on collision with asteroid - Case: B")
+                        break
+                    }
+                }
+            }
+        }
+        
+        // Asteroid collisions
+        if (contact.bodyA.categoryBitMask & PhysicsCategory.enemy.rawValue) > 0 {
+            
+        } else if (contact.bodyB.categoryBitMask & PhysicsCategory.enemy.rawValue) > 0 {
+            
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -72,7 +173,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     
                 // tap/hold left side to shield
                 else if player.energy >= 50{
-                    player.shieldsUp()
+                    player.shieldsUp(manager: peerService)
                 }
                 else if player.energy < 50 {
                     // Flash energy bar
@@ -107,7 +208,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             // Turn off shield
             if touch.location(in: view).x < view!.frame.width/2 {
-                player.shieldsDown()
+                player.shieldsDown(manager: peerService)
             }
         }
     }
@@ -115,16 +216,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Turn off shield
         for touch in touches {
             if touch.previousLocation(in: view).x < view!.frame.width/2 && touch.location(in: view).x > view!.frame.width/2 {
-                player.shieldsDown()
+                player.shieldsDown(manager: peerService)
             }
         }
     }
 
     func fireLaser() {
         if player.energy >= 10 {
+            laserId? += 1
             let laser = Laser()
-            laser.fire(player: player)
+            laser.fire(player: player, peerManager: peerService)
+            laser.primaryKey = laserId
+            self.peerService.send(gameState: [1, laser.position.x, laser.position.y, laser.zRotation, (laser.physicsBody?.velocity.dx)!, (laser.physicsBody?.velocity.dy)!, CGFloat(Double(laser.primaryKey!))])
             self.addChild(laser)
+            
+            laserArray.append(laser)
+            print("# of lasers: \(laserArray.count)")
+            if laserArray.count > 12 {
+                laserArray.remove(at: 0)
+            }
+            
+//            for i in 0..<laserArray.count {
+//                print(laserArray[i].primaryKey)
+//            }
         }
         else {
             hud.insuffEnergyDisplay(newEnergy: player.energy)
@@ -133,9 +247,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.run(laserMalfunction)
             }
             malfunctionTimer = 2.25
-            
         }
     }
+    
     override func didSimulatePhysics() {
         self.camera!.position = player.position
     }
@@ -145,6 +259,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if player.health <= 0 && !gameOver {
             hud.showButtons()
             gameOver = true
+            peerService.send(gameState: [2.0])
             let loc = player.position
             
             // Explosions!!!
@@ -171,7 +286,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     
                     // shields power down
                     hud.insuffEnergyDisplay(newEnergy: player.energy)
-                    player.shieldsDown()
+                    player.shieldsDown(manager: peerService)
                 }
             }
             
@@ -202,7 +317,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Check if player is out of bounds
         if map.inBounds(player: player) == false {
             map.outOfBoundsTimer -= elapsed
-            print(map.outOfBoundsTimer)
+//            print(map.outOfBoundsTimer)
             player.energyRegen = 0
             if map.outOfBoundsTimer <= 0 {
                 player.energy -= 2
@@ -225,9 +340,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             switch
             UIApplication.shared.statusBarOrientation {
             case .landscapeLeft:
-                forceAmount = 35
+                forceAmount = 10
             case .landscapeRight:
-                forceAmount = -35
+                forceAmount = -10
             default:
                 forceAmount = 0
             }
@@ -258,6 +373,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else if (player.physicsBody?.velocity.dy)! < CGFloat(-MAX_PLAYER_SPEED) {
                 player.physicsBody?.velocity.dy = CGFloat(-MAX_PLAYER_SPEED)
             }
+            
+            // send new location to opponent
+            var shieldStatus:CGFloat
+            if player.shielded {
+                shieldStatus = 1.0
+            }
+            else {
+                shieldStatus = 0.0
+            }
+            peerService.send(gameState: [0, (player.position.x), (player.position.y), (player.zRotation), (player.physicsBody?.velocity.dx)!, (player.physicsBody?.velocity.dy)!, (shieldStatus)])
+            
+            // update targeting indicator
+            if let indicator = hud.indicator {
+                indicator.alpha = 1
+                hud.updateIndicator(target: opponent!, player: player)
+            }
         }
         
         // **new condition to prevent score from increasing after game over
@@ -272,6 +403,53 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
 }
 
+
+extension GameScene: PeerServiceManagerDelegate {
+    func connectedDevicesChanged(manager: PeerServiceManager, connectedDevices: [String]) {
+        OperationQueue.main.addOperation {
+            print("Connected to \(connectedDevices)")
+        }
+    }
+    func coordChanged(manager: PeerServiceManager, coord: [CGFloat]) {
+        print("Received: \(coord)")
+        self.opponent?.position = CGPoint(x: coord[0], y: coord[1])
+        self.opponent?.zRotation = coord[2]
+        self.opponent?.physicsBody?.velocity = CGVector(dx: coord[3], dy: coord[4])
+        if coord[5] == 1.0 {
+            self.opponent?.texture = self.enemyShielded
+        } else {
+            self.opponent?.texture = self.enemyNoShield
+        }
+    }
+    func enemyFired(manager: PeerServiceManager, info: [CGFloat]) {
+        //OperationQueue.main.addOperation {
+            let newBeam = EnemyLaser()
+            newBeam.position = CGPoint(x: info[0], y: info[1])
+            newBeam.zRotation = info[2]
+            newBeam.physicsBody?.velocity = CGVector(dx: info[3], dy: info[4])
+            newBeam.name = String(describing: Int(info[5]))
+            enemyLaserArray.append(newBeam)
+            let enemyBeamSound = SKAction.playSoundFileNamed("Sound/enemylaser.wav", waitForCompletion: false)
+            self.run(enemyBeamSound)
+            self.addChild(newBeam)
+        //}
+    }
+    func enemyDied(manager: PeerServiceManager) {
+        self.hud.showButtons()
+        self.gameOver = true
+    }
+    func removeShot(manager: PeerServiceManager, info: [CGFloat]) {
+        print("remove shot: \(info)")
+        for i in self.enemyLaserArray {
+            print(i.name!, String(Int(info[0])))
+            if i.name == String(Int(info[0])) {
+                i.removeFromParent()
+//                self.enemyLaserArray.remove(at: i.index(ofAccessibilityElement: self.enemyLaserArray))
+            }
+        }
+    }
+}
+
 // game constants
 let ENERGY_RECHARGE = 0.1
 let SCORE_TICKRATE = 2.0
@@ -280,13 +458,14 @@ let MAX_PLAYER_SPEED = 300
 let MAX_PLAYER_HEALTH = 100
 
 enum PhysicsCategory:UInt32 {
-    case spaceship = 1
-    case damagedSpaceship = 2
-    case map = 3
-    case enemy = 4
-    case laser = 8
-    case powerup = 16
-    case debris = 32
+    case map = 0
+    case spaceship = 2
+    case damagedSpaceship = 4
+    case enemy = 8
+    case laser = 16
+    case enemyLaser = 32
+    case debris = 64
+    case powerup = 128
     
     
 }

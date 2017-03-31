@@ -23,12 +23,15 @@
 		1B28D9C11E74C38E0082B1F9 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B28D9C01E74C38E0082B1F9 /* Player.swift */; };
 		1B28D9C31E74C3A40082B1F9 /* Asteroid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B28D9C21E74C3A40082B1F9 /* Asteroid.swift */; };
 		1B28D9C51E74C3BA0082B1F9 /* Debris.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B28D9C41E74C3BA0082B1F9 /* Debris.swift */; };
+		1B4E3FAB1E8C26B20036B9DF /* PeerServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4E3FAA1E8C26B20036B9DF /* PeerServiceManager.swift */; };
+		1B4E3FAD1E8C26C90036B9DF /* PeerServiceManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4E3FAC1E8C26C90036B9DF /* PeerServiceManagerDelegate.swift */; };
 		1B9821DD1E74CE3400FD99B5 /* Laser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9821DC1E74CE3400FD99B5 /* Laser.swift */; };
 		1B9821E11E74F88B00FD99B5 /* Powerup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9821E01E74F88B00FD99B5 /* Powerup.swift */; };
 		1B9821E31E74FA3E00FD99B5 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9821E21E74FA3E00FD99B5 /* MenuScene.swift */; };
 		1B9821E51E74FA8700FD99B5 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9821E41E74FA8700FD99B5 /* Background.swift */; };
 		B20E81AA1E750B0B00F5C4B2 /* HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20E81A91E750B0B00F5C4B2 /* HUD.swift */; };
 		B23FB7F01E8B58F80033C7A7 /* MapBoundaries.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23FB7EF1E8B58F80033C7A7 /* MapBoundaries.swift */; };
+		B2D1B7461E8DC86300AD2D33 /* FixedAsteroidField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D1B7451E8DC86300AD2D33 /* FixedAsteroidField.swift */; };
 		D5CBD5F31E770BA80099BE54 /* Sound in Resources */ = {isa = PBXBuildFile; fileRef = D5CBD5F21E770BA80099BE54 /* Sound */; };
 		D5CBD5F51E772D1B0099BE54 /* BossSpawnAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5CBD5F41E772D1B0099BE54 /* BossSpawnAnimation.swift */; };
 /* End PBXBuildFile section */
@@ -73,12 +76,15 @@
 		1B28D9C01E74C38E0082B1F9 /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		1B28D9C21E74C3A40082B1F9 /* Asteroid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asteroid.swift; sourceTree = "<group>"; };
 		1B28D9C41E74C3BA0082B1F9 /* Debris.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Debris.swift; sourceTree = "<group>"; };
+		1B4E3FAA1E8C26B20036B9DF /* PeerServiceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerServiceManager.swift; sourceTree = "<group>"; };
+		1B4E3FAC1E8C26C90036B9DF /* PeerServiceManagerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerServiceManagerDelegate.swift; sourceTree = "<group>"; };
 		1B9821DC1E74CE3400FD99B5 /* Laser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Laser.swift; sourceTree = "<group>"; };
 		1B9821E01E74F88B00FD99B5 /* Powerup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Powerup.swift; sourceTree = "<group>"; };
 		1B9821E21E74FA3E00FD99B5 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 		1B9821E41E74FA8700FD99B5 /* Background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
 		B20E81A91E750B0B00F5C4B2 /* HUD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HUD.swift; sourceTree = "<group>"; };
 		B23FB7EF1E8B58F80033C7A7 /* MapBoundaries.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapBoundaries.swift; sourceTree = "<group>"; };
+		B2D1B7451E8DC86300AD2D33 /* FixedAsteroidField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FixedAsteroidField.swift; sourceTree = "<group>"; };
 		D5CBD5F21E770BA80099BE54 /* Sound */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Sound; sourceTree = "<group>"; };
 		D5CBD5F41E772D1B0099BE54 /* BossSpawnAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BossSpawnAnimation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -136,19 +142,24 @@
 				1B28D98E1E74C2D90082B1F9 /* Actions.sks */,
 				1B28D98C1E74C2D90082B1F9 /* GameScene.sks */,
 				1B28D98A1E74C2D90082B1F9 /* AppDelegate.swift */,
+				1B28D9C21E74C3A40082B1F9 /* Asteroid.swift */,
 				1B9821E41E74FA8700FD99B5 /* Background.swift */,
 				1B28D9C41E74C3BA0082B1F9 /* Debris.swift */,
 				1B28D9901E74C2D90082B1F9 /* GameScene.swift */,
 				B23FB7EF1E8B58F80033C7A7 /* MapBoundaries.swift */,
 				1B28D9921E74C2D90082B1F9 /* GameViewController.swift */,
+				B2D1B7451E8DC86300AD2D33 /* FixedAsteroidField.swift */,
 				B20E81A91E750B0B00F5C4B2 /* HUD.swift */,
 				1B9821DC1E74CE3400FD99B5 /* Laser.swift */,
 				1B9821E21E74FA3E00FD99B5 /* MenuScene.swift */,
 				1B28D9C01E74C38E0082B1F9 /* Player.swift */,
+				1B15408E1E761A530050F2C5 /* EnemyLaser.swift */,
 				1B28D9971E74C2D90082B1F9 /* Assets.xcassets */,
-				B23FB7EE1E8B2B720033C7A7 /* Boss/Asteroids/Powerup */,
+				B23FB7EE1E8B2B720033C7A7 /* Boss/Powerup (removed) */,
 				1B28D9991E74C2D90082B1F9 /* LaunchScreen.storyboard */,
 				1B28D9941E74C2D90082B1F9 /* Main.storyboard */,
+				1B4E3FAA1E8C26B20036B9DF /* PeerServiceManager.swift */,
+				1B4E3FAC1E8C26C90036B9DF /* PeerServiceManagerDelegate.swift */,
 			);
 			path = spaceships;
 			sourceTree = "<group>";
@@ -171,17 +182,15 @@
 			path = spaceshipsUITests;
 			sourceTree = "<group>";
 		};
-		B23FB7EE1E8B2B720033C7A7 /* Boss/Asteroids/Powerup */ = {
+		B23FB7EE1E8B2B720033C7A7 /* Boss/Powerup (removed) */ = {
 			isa = PBXGroup;
 			children = (
-				1B28D9C21E74C3A40082B1F9 /* Asteroid.swift */,
 				1B15408C1E7618620050F2C5 /* Boss.swift */,
 				D5CBD5F41E772D1B0099BE54 /* BossSpawnAnimation.swift */,
-				1B15408E1E761A530050F2C5 /* EnemyLaser.swift */,
 				1B28D9BE1E74C36B0082B1F9 /* GameSprite.swift */,
 				1B9821E01E74F88B00FD99B5 /* Powerup.swift */,
 			);
-			name = Boss/Asteroids/Powerup;
+			name = "Boss/Powerup (removed)";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -252,7 +261,7 @@
 				TargetAttributes = {
 					1B28D9861E74C2D90082B1F9 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = K7HCY2VAD5;
+						DevelopmentTeam = E656B54U75;
 						ProvisioningStyle = Automatic;
 					};
 					1B28D9A01E74C2D90082B1F9 = {
@@ -324,10 +333,12 @@
 			files = (
 				1B9821E51E74FA8700FD99B5 /* Background.swift in Sources */,
 				1B28D9BF1E74C36B0082B1F9 /* GameSprite.swift in Sources */,
+				B2D1B7461E8DC86300AD2D33 /* FixedAsteroidField.swift in Sources */,
 				1B28D9911E74C2D90082B1F9 /* GameScene.swift in Sources */,
 				1B28D9931E74C2D90082B1F9 /* GameViewController.swift in Sources */,
 				1B15408F1E761A530050F2C5 /* EnemyLaser.swift in Sources */,
 				1B28D98B1E74C2D90082B1F9 /* AppDelegate.swift in Sources */,
+				1B4E3FAD1E8C26C90036B9DF /* PeerServiceManagerDelegate.swift in Sources */,
 				1B28D9C51E74C3BA0082B1F9 /* Debris.swift in Sources */,
 				D5CBD5F51E772D1B0099BE54 /* BossSpawnAnimation.swift in Sources */,
 				B23FB7F01E8B58F80033C7A7 /* MapBoundaries.swift in Sources */,
@@ -335,6 +346,7 @@
 				1B9821DD1E74CE3400FD99B5 /* Laser.swift in Sources */,
 				1B15408D1E7618620050F2C5 /* Boss.swift in Sources */,
 				1B9821E31E74FA3E00FD99B5 /* MenuScene.swift in Sources */,
+				1B4E3FAB1E8C26B20036B9DF /* PeerServiceManager.swift in Sources */,
 				B20E81AA1E750B0B00F5C4B2 /* HUD.swift in Sources */,
 				1B28D9C31E74C3A40082B1F9 /* Asteroid.swift in Sources */,
 				1B28D9C11E74C38E0082B1F9 /* Player.swift in Sources */,
@@ -490,11 +502,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = K7HCY2VAD5;
+				DEVELOPMENT_TEAM = E656B54U75;
 				INFOPLIST_FILE = spaceships/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.SalinStudios.ToDoList;
+				PRODUCT_BUNDLE_IDENTIFIER = com.JustinChang.spaceships;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -504,11 +517,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = K7HCY2VAD5;
+				DEVELOPMENT_TEAM = E656B54U75;
 				INFOPLIST_FILE = spaceships/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.SalinStudios.ToDoList;
+				PRODUCT_BUNDLE_IDENTIFIER = com.JustinChang.spaceships;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

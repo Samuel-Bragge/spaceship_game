@@ -38,7 +38,7 @@ class HUD: SKNode {
         let cameraOrigin = CGPoint(
             x: screenSize.width / 2,
             y: screenSize.height / 2)
-        print (cameraOrigin)
+//        print (cameraOrigin)
         
         indicator = SKSpriteNode(texture: textureAtlas.textureNamed("indicatorArrow"))
 //        let indicatorPosition = CGPoint(x: frame.width / 2, y: frame.height / 2)
@@ -149,10 +149,10 @@ class HUD: SKNode {
         // Assign node names to the buttons:
         restartButton.name = "restartGame"
         menuButton.name = "returnToMenu"
-        menuButton.position = CGPoint(x: -140, y: 0)
+        menuButton.position = CGPoint(x: 0, y: 0)
         // Size the button nodes:
         restartButton.size = CGSize(width: 140, height: 140)
-        menuButton.size = CGSize(width: 70, height: 70)
+        menuButton.size = CGSize(width: 140, height: 140)
         
         
     }
@@ -160,14 +160,18 @@ class HUD: SKNode {
     func showButtons() {
         // Set the button alpha to 0:
         restartButton.alpha = 0
+        restartButton.zPosition = 50
         menuButton.alpha = 0
+        menuButton.zPosition = 50
         // Add the button nodes to the HUD:
-        self.addChild(restartButton)
-        self.addChild(menuButton)
+        if restartButton.parent == nil {
+            self.addChild(restartButton)
+            self.addChild(menuButton)
+        }
         // Fade in the buttons:
         let fadeAnimation =
             SKAction.fadeAlpha(to: 1, duration: 0.4)
-        restartButton.run(fadeAnimation)
+//        restartButton.run(fadeAnimation)
         menuButton.run(fadeAnimation)
     }
     
@@ -264,9 +268,19 @@ class HUD: SKNode {
         indicator?.size = CGSize(width: 9, height: 12)
     }
     
-    func updateIndicator(boss: Boss, player: Player) {
-        let deltaX = boss.position.x - player.position.x
-        let deltaY = boss.position.y - player.position.y
+    func updateIndicator(target: SKSpriteNode, player: Player) {
+        let deltaX = target.position.x - player.position.x
+        let deltaY = target.position.y - player.position.y
+        let rawDelta = sqrt(deltaX*deltaX + deltaY*deltaY)
+        if rawDelta < 300 {
+            indicator?.texture = textureAtlas.textureNamed("indicatorArrow")
+        }
+        else if rawDelta >= 300 && rawDelta < 600 {
+            indicator?.texture = textureAtlas.textureNamed("indicatorArrow2")
+        }
+        else if rawDelta >= 600 {
+            indicator?.texture = textureAtlas.textureNamed("indicatorArrow3")
+        }
         let angle = atan2(deltaY, deltaX)
         indicator?.zRotation = angle - CGFloat(Double.pi / 2)
         indicator?.position = CGPoint(x: (frame.width / 2) + cos(angle) * 50, y: (frame.height) + sin(angle) * 50)
