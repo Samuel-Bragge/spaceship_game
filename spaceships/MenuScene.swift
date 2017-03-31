@@ -18,8 +18,9 @@ import SpriteKit
 
 class MenuScene: SKScene {
     let textureAtlas:SKTextureAtlas = SKTextureAtlas(named:"HUD")
-    let startButton = SKSpriteNode()
-   
+    let hostButton = SKSpriteNode()
+    let joinButton = SKSpriteNode()
+    
     override func didMove(to view:SKView) {
         self.anchorPoint = CGPoint(x:0.5, y:0.5)
         self.scaleMode = SKSceneScaleMode.aspectFill
@@ -35,11 +36,6 @@ class MenuScene: SKScene {
 //        logoText.position = CGPoint(x:0, y:40)
 //        logoText.fontSize = 45
 //        self.addChild(logoText)
-        
-//        let mainTitle = SKSpriteNode(imageNamed:"title")
-//        mainTitle.size = CGSize(width:500, height:100)
-//        mainTitle.position = CGPoint(x:0, y:40)
-//        self.addChild(mainTitle)
         
         hostButton.texture = textureAtlas.textureNamed("button")
         hostButton.size = CGSize(width:145, height:76)

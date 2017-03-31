@@ -63,7 +63,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         gameOver = false
         print(isHost)
         opponent = SKSpriteNode(texture: enemyNoShield, color: .clear, size: (player.size))
-        if isHost {
+        if isHost == true {
             player.position = CGPoint(x: 150, y: 300)
             opponent?.position = CGPoint(x: 150, y: 200)
         }
@@ -77,7 +77,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         hud.addIndicator()
         hud.addChild((hud.indicator!))
         peerService.delegate = self
-        if isHost {
+        if isHost == true {
             peerService.host()
         } else {
             peerService.join()
@@ -172,10 +172,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                     
                 // tap/hold left side to shield
-                else if player.energy >= 50{
+                else if player.energy >= 10{
                     player.shieldsUp(manager: peerService)
                 }
-                else if player.energy < 50 {
+                else if player.energy < 10 {
                     // Flash energy bar
                     hud.insuffEnergyDisplay(newEnergy: player.energy)
                 }
@@ -282,7 +282,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if player.energyRefreshRate <= 0 {
             if player.shielded {
                 player.energy -= 4
-                if player.energy < 50 {
+                if player.energy < 10 {
                     
                     // shields power down
                     hud.insuffEnergyDisplay(newEnergy: player.energy)
