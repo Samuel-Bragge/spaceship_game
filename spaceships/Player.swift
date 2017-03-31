@@ -15,13 +15,12 @@ class Player: SKSpriteNode {
     var energyRegen = 2
     var damage = 0
     var initialSize: CGSize = CGSize(width:50, height:50)
-    var initialPos: CGPoint = CGPoint(x: 150, y: 250)
+    var initialPos: CGPoint?
     var textureAtlas = SKTextureAtlas(named: "Spaceship")
     
     init() {
         
         super.init(texture: SKTexture(imageNamed:"Spaceship"), color: .clear, size: initialSize)
-        self.position = initialPos
 //        self.physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         self.physicsBody = SKPhysicsBody(texture: textureAtlas.textureNamed("Spaceship"), size: textureAtlas.textureNamed("Spaceship").size())
         self.physicsBody?.affectedByGravity = false
@@ -39,11 +38,13 @@ class Player: SKSpriteNode {
     func shieldsUp(manager: PeerServiceManager) {
         self.shielded = true
         self.texture = textureAtlas.textureNamed("redship")
+        manager.send(gameState: [0, (self.position.x), (self.position.y), (self.zRotation), (self.physicsBody?.velocity.dx)!, (self.physicsBody?.velocity.dy)!, (1.0)])
     }
     
     func shieldsDown(manager: PeerServiceManager) {
         shielded = false
         self.texture = textureAtlas.textureNamed("Spaceship")
+        manager.send(gameState: [0, (self.position.x), (self.position.y), (self.zRotation), (self.physicsBody?.velocity.dx)!, (self.physicsBody?.velocity.dy)!, (0.0)])
     }
     
     func collision(other: SKPhysicsBody) {
@@ -72,5 +73,5 @@ class Player: SKSpriteNode {
     }
     
     
-    
+
 }

@@ -22,7 +22,7 @@ class Laser: SKSpriteNode {
         self.physicsBody?.collisionBitMask = 0
     }
     
-    func fire(player: Player) -> Laser {
+    func fire(player: Player, peerManager: PeerServiceManager) -> Laser {
         let laserSound = SKAction.playSoundFileNamed("Sound/laser.wav", waitForCompletion: false)
         self.run(laserSound)
         let offset = CGPoint(x:(player.position.x) + cos(((player.zRotation) + CGFloat(Double.pi/2)))*(player.size.width)*0.34, y:(player.position.y) + sin(((player.zRotation) + CGFloat(Double.pi/2)))*(player.size.width)*0.34)

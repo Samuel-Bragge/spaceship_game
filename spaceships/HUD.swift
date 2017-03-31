@@ -38,7 +38,7 @@ class HUD: SKNode {
         let cameraOrigin = CGPoint(
             x: screenSize.width / 2,
             y: screenSize.height / 2)
-        print (cameraOrigin)
+//        print (cameraOrigin)
         
         indicator = SKSpriteNode(texture: textureAtlas.textureNamed("indicatorArrow"))
 //        let indicatorPosition = CGPoint(x: frame.width / 2, y: frame.height / 2)
@@ -149,10 +149,10 @@ class HUD: SKNode {
         // Assign node names to the buttons:
         restartButton.name = "restartGame"
         menuButton.name = "returnToMenu"
-        menuButton.position = CGPoint(x: -140, y: 0)
+        menuButton.position = CGPoint(x: 0, y: 0)
         // Size the button nodes:
         restartButton.size = CGSize(width: 140, height: 140)
-        menuButton.size = CGSize(width: 70, height: 70)
+        menuButton.size = CGSize(width: 140, height: 140)
         
         
     }
@@ -169,7 +169,7 @@ class HUD: SKNode {
         // Fade in the buttons:
         let fadeAnimation =
             SKAction.fadeAlpha(to: 1, duration: 0.4)
-        restartButton.run(fadeAnimation)
+//        restartButton.run(fadeAnimation)
         menuButton.run(fadeAnimation)
     }
     

@@ -36,6 +36,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     override func didMove(to view: SKView) {
+        print("Checkpoint 2")
         self.scaleMode = SKSceneScaleMode.aspectFill
         
         // Start Core Motion
@@ -59,6 +60,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         hud.score = 0
         gameOver = false
+        print(isHost)
         opponent = SKSpriteNode(texture: enemyNoShield, color: .clear, size: (player.size))
         if isHost {
             player.position = CGPoint(x: 150, y: 300)
@@ -69,6 +71,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             opponent?.position = CGPoint(x: 150, y: 300)
         }
         self.addChild(player)
+        self.addChild(opponent!)
+        // Add targeting indicator
+        hud.addIndicator()
+        hud.addChild((hud.indicator!))
+        peerService.delegate = self
+        if isHost {
+            peerService.host()
+        } else {
+            peerService.join()
+        }
 //        print(player.position)
         // initialize background
 //        for _ in 0..<3 {
@@ -210,7 +222,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if player.energy >= 10 {
             laserId? += 1
             let laser = Laser()
-            laser.fire(player: player).primaryKey = laserId
+            laser.fire(player: player, peerManager: peerService)
+            laser.primaryKey = laserId
             self.addChild(laser)
             
             laserArray.append(laser)

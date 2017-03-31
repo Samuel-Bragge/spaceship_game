@@ -76,10 +76,13 @@ class MenuScene: SKScene {
     // press start button transitions to main game scene
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in (touches) {
+            print(touch)
             let location = touch.location(in:self)
             let nodeTouched = atPoint(location)
             if nodeTouched.name == "HostBtn" {
                 let newScene = GameScene(fileNamed:"GameScene")
+                print("Nil? \(newScene)")
+                print("Checkpoint 1A")
                 newScene?.isHost = true
                 let transition = SKTransition.fade(withDuration: 0.8)
                 newScene?.scaleMode = SKSceneScaleMode.aspectFill
@@ -87,6 +90,8 @@ class MenuScene: SKScene {
             }
             else if nodeTouched.name == "JoinBtn" {
                 let newScene = GameScene(fileNamed:"GameScene")
+                print("Nil? \(newScene)")
+                print("Checkpoint 1B")
                 newScene?.isHost = false
                 let transition = SKTransition.fade(withDuration: 0.8)
                 newScene?.scaleMode = SKSceneScaleMode.aspectFill
