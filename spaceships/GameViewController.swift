@@ -34,8 +34,9 @@ class GameViewController: UIViewController {
                 musicPlayer = try AVAudioPlayer(contentsOf: url)
                 musicPlayer.numberOfLoops = -1
                 musicPlayer.prepareToPlay()
+                musicPlayer.volume = 0.2
                 musicPlayer.play()
-                musicPlayer.volume = 0.7
+               
             }
             catch { /* Couldn't load music file */ }
         }

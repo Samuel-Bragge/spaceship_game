@@ -19,21 +19,27 @@ import SpriteKit
 class MenuScene: SKScene {
     let textureAtlas:SKTextureAtlas = SKTextureAtlas(named:"HUD")
     let startButton = SKSpriteNode()
+   
     override func didMove(to view:SKView) {
         self.anchorPoint = CGPoint(x:0.5, y:0.5)
         self.scaleMode = SKSceneScaleMode.aspectFill
-        let backgroundImage = SKSpriteNode(imageNamed:"background-menu")
-        backgroundImage.size = CGSize(width:1024, height:768)
+        let backgroundImage = SKSpriteNode(texture: SKTextureAtlas(named:"Backgrounds").textureNamed("background"))
+        backgroundImage.size = CGSize(width:view.bounds.width, height:view.bounds.height)
         backgroundImage.zPosition = -1
         self.addChild(backgroundImage)
         
         // **changed text to look more relaxing for "shootin rocks" lol
         // **adjusted positions of title and buttons to match new menu background
-        let logoText = SKLabelNode(fontNamed: "IowanOldStyle-Bold")
-        logoText.text = "Let's shoot rocks in space "
-        logoText.position = CGPoint(x:0, y:40)
-        logoText.fontSize = 45
-        self.addChild(logoText)
+//        let logoText = SKLabelNode(fontNamed: "IowanOldStyle-Bold")
+//        logoText.text = "Let's shoot rocks in space "
+//        logoText.position = CGPoint(x:0, y:40)
+//        logoText.fontSize = 45
+//        self.addChild(logoText)
+        
+//        let mainTitle = SKSpriteNode(imageNamed:"title")
+//        mainTitle.size = CGSize(width:500, height:100)
+//        mainTitle.position = CGPoint(x:0, y:40)
+//        self.addChild(mainTitle)
         
         startButton.texture = textureAtlas.textureNamed("button")
         startButton.size = CGSize(width:295, height:76)
