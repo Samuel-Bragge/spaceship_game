@@ -35,16 +35,14 @@ class Player: SKSpriteNode {
 //        self.physicsBody?.collisionBitMask = PhysicsCategory.enemy.rawValue | ~PhysicsCategory.debris.rawValue
     }
     
-    func shieldsUp(manager: PeerServiceManager) {
+    func shieldsUp() {
         self.shielded = true
         self.texture = textureAtlas.textureNamed("redship")
-        manager.send(gameState: [0, (self.position.x), (self.position.y), (self.zRotation), (self.physicsBody?.velocity.dx)!, (self.physicsBody?.velocity.dy)!, (1.0)])
     }
     
-    func shieldsDown(manager: PeerServiceManager) {
+    func shieldsDown() {
         shielded = false
         self.texture = textureAtlas.textureNamed("Spaceship")
-        manager.send(gameState: [0, (self.position.x), (self.position.y), (self.zRotation), (self.physicsBody?.velocity.dx)!, (self.physicsBody?.velocity.dy)!, (0.0)])
     }
     
     func collision(other: SKPhysicsBody) {

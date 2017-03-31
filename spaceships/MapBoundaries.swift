@@ -13,12 +13,12 @@ class MapBoundaries: SKSpriteNode {
     var outOfBoundsTimer: Double = 5
     
     init() {
-        super.init(texture: nil, color: .clear, size: CGSize(width: 5000, height: 5000))
-        self.position = CGPoint(x: -500, y: -500)
+        super.init(texture: nil, color: .blue, size: CGSize(width: 4000, height: 4000))
+        self.position = CGPoint(x: 0, y: 0)
         self.anchorPoint = CGPoint(x: 0, y: 0)
         // test purposes
         self.zPosition = -3
-//        self.alpha = 0.2
+        self.alpha = 0.05
         
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
         self.physicsBody?.affectedByGravity = false
