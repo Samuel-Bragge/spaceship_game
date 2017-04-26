@@ -11,7 +11,9 @@ import CoreMotion
 import AVFoundation
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    // NETCODE
     let peerService = PeerServiceManager()
+    let server = SocketIOManager.sharedInstance;
     let motionManager = CMMotionManager()
     let cam = SKCameraNode()
     let map = MapBoundaries()
@@ -35,9 +37,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var mrOneShot = [Asteroid]()
     
+    func empty(arg: Any) {
+        print("Empty");
+    }
     
     override func didMove(to view: SKView) {
         print("Checkpoint 2")
+        server.connectToServerWithNickname(nickname: "test", completionHandler: empty);
         self.scaleMode = SKSceneScaleMode.aspectFill
         
         // Start Core Motion
@@ -76,6 +82,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Add targeting indicator
         hud.addIndicator()
         hud.addChild((hud.indicator!))
+        // NETCODE
         peerService.delegate = self
         if isHost == true {
             peerService.host()
@@ -117,6 +124,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         
         // Player collisions
+        // NETCODE
         if (contact.bodyA.categoryBitMask & PhysicsCategory.spaceship.rawValue) > 0 {
             player.collision(other: contact.bodyB, peerManager: peerService)
         } else if (contact.bodyB.categoryBitMask & PhysicsCategory.spaceship.rawValue) > 0 {
@@ -172,6 +180,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                     
                 // tap/hold left side to shield
+                    // NETCODE
                 else if player.energy >= 10{
                     player.shieldsUp(manager: peerService)
                 }
@@ -207,6 +216,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for touch in touches {
             
             // Turn off shield
+            // NETCODE
             if touch.location(in: view).x < view!.frame.width/2 {
                 player.shieldsDown(manager: peerService)
             }
@@ -214,6 +224,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Turn off shield
+        // NETCODE
         for touch in touches {
             if touch.previousLocation(in: view).x < view!.frame.width/2 && touch.location(in: view).x > view!.frame.width/2 {
                 player.shieldsDown(manager: peerService)
@@ -225,6 +236,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if player.energy >= 10 {
             laserId? += 1
             let laser = Laser()
+            // NETCODE
             laser.fire(player: player, peerManager: peerService)
             laser.primaryKey = laserId
             self.peerService.send(gameState: [1, laser.position.x, laser.position.y, laser.zRotation, (laser.physicsBody?.velocity.dx)!, (laser.physicsBody?.velocity.dy)!, CGFloat(Double(laser.primaryKey!))])
@@ -259,6 +271,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if player.health <= 0 && !gameOver {
             hud.showButtons()
             gameOver = true
+            // NETCODE
             peerService.send(gameState: [2.0])
             let loc = player.position
             
@@ -286,6 +299,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     
                     // shields power down
                     hud.insuffEnergyDisplay(newEnergy: player.energy)
+                    // NETCODE
                     player.shieldsDown(manager: peerService)
                 }
             }
@@ -382,6 +396,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else {
                 shieldStatus = 0.0
             }
+            // NETCODE
             peerService.send(gameState: [0, (player.position.x), (player.position.y), (player.zRotation), (player.physicsBody?.velocity.dx)!, (player.physicsBody?.velocity.dy)!, (shieldStatus)])
             
             // update targeting indicator
@@ -403,7 +418,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
 }
 
-
+// NETCODE
 extension GameScene: PeerServiceManagerDelegate {
     func connectedDevicesChanged(manager: PeerServiceManager, connectedDevices: [String]) {
         OperationQueue.main.addOperation {
